@@ -3596,7 +3596,6 @@ video {
     fakeNames: ['Nguyễn A.', 'Trần B.', 'Lê C.', 'Phạm D.', 'Hoàng E.', 'Vũ F.', 'Đặng G.', 'Bùi H.', 'Lý I.', 'Đỗ K.', 'Mai L.', 'Hồng M.']
     };
     // ==================== STATE ====================
-    let userUnmuted = false;
     let state = {
     cart: [],
     selectedColor: DATA.product.colors[0],
@@ -3611,7 +3610,7 @@ video {
     // ==================== INIT ====================
     document.addEventListener('DOMContentLoaded', () => {
     // Biến đánh dấu người dùng đã tương tác với trang (cho phép auto-play có tiếng)
-    let userInteracted = false;
+
     document.body.addEventListener('click', () => {
         if (!userInteracted) {
             userInteracted = true;
@@ -3635,58 +3634,58 @@ video {
     setupTabs();
     startAutoSlider();
     startFakeNotifications();
-  // --- VIDEO AUTO PLAY/PAUSE & AUDIO LOGIC ---
+ // --- VIDEO AUTO PLAY/PAUSE KHI SCROLL ---
 const videoEl = document.getElementById('productVideo');
 const unmuteBtn = document.getElementById('unmuteBtn');
-
+let userInteracted = false; // Cờ đánh dấu người dùng đã chạm vào màn hình
 
 if (videoEl) {
-    // 1. Tự động Play (Muted) khi vào trang
-    videoEl.play().catch(e => console.log("Autoplay blocked need interaction"));
+// 1. Tự động Play (Muted) khi vào trang
+videoEl.play().catch(e => console.log("Autoplay blocked need interaction"));
 
-    // 2. Observer để Pause khi cuộn đi chỗ khác
-    const videoObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                videoEl.play().catch(() => {});
-            } else {
-                videoEl.pause();
-            }
-        });
-    }, { threshold: 0.5 }); // Chỉ cần hiện 50% là play
-    videoObserver.observe(videoEl);
+// 2. Observer để Pause khi cuộn đi chỗ khác
+const videoObserver = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+videoEl.play().catch(() => {});
+} else {
+videoEl.pause();
+}
+});
+}, { threshold: 0.5 }); // Chỉ cần hiện 50% là play
+videoObserver.observe(videoEl);
 }
 
 // 3. Xử lý nút Bật/Tắt tiếng
 if (unmuteBtn && videoEl) {
-    unmuteBtn.onclick = function(e) {
-        e.stopPropagation(); // Ngăn lan sự kiện click
-        
-        // Yêu cầu user interaction để bật tiếng
-        if (!userInteracted) userInteracted = true;
+unmuteBtn.onclick = function(e) {
+e.stopPropagation(); // Ngăn lan sự kiện click
 
-        if (videoEl.muted) {
-            videoEl.muted = false; 
-            unmuteBtn.innerHTML = '🔊 Tắt tiếng';
-            unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
-        } else {
-            videoEl.muted = true;
-            unmuteBtn.innerHTML = '🔇 Bật tiếng';
-            unmuteBtn.style.background = 'rgba(0,0,0,0.7)';
-        }
-    };
+// Yêu cầu user interaction để bật tiếng
+if (!userInteracted) userInteracted = true;
+
+if (videoEl.muted) {
+videoEl.muted = false; 
+unmuteBtn.innerHTML = '🔊 Tắt tiếng';
+unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
+} else {
+videoEl.muted = true;
+unmuteBtn.innerHTML = '🔇 Bật tiếng';
+unmuteBtn.style.background = 'rgba(0,0,0,0.7)';
+}
+};
 }
 
 // 4. Lắng nghe tương tác đầu tiên trên toàn trang để cho phép unmute
 document.addEventListener('click', function handleFirstInteraction() {
-    if (!userInteracted) {
-        userInteracted = true;
-        // Nếu video đang chạy mà bị mute, thử unmute nhẹ nhàng
-        if (videoEl && videoEl.muted && !videoEl.paused) {
-            // Không tự unmute ngay lập tức để tránh giật mình, 
-            // chờ người dùng bấm nút unmuteBtn thì sẽ hoạt động ngay nhờ cờ userInteracted = true
-        }
-    }
+if (!userInteracted) {
+userInteracted = true;
+// Nếu video đang chạy mà bị mute, thử unmute nhẹ nhàng
+if (videoEl && videoEl.muted && !videoEl.paused) {
+// Không tự unmute ngay lập tức để tránh giật mình, 
+// chờ người dùng bấm nút unmuteBtn thì sẽ hoạt động ngay nhờ cờ userInteracted = true
+}
+}
 }, { once: true }); // Chỉ chạy 1 lần
 // --- KẾT THÚC CODE SỬA LỖI VIDEO ---
     updateDeliveryTime();
@@ -3912,45 +3911,45 @@ document.addEventListener('click', function handleFirstInteraction() {
         slider.addEventListener('mouseup', () => isDragging = false);
         slider.addEventListener('touchend', () => isDragging = false);
     }
-   // ==================== AUTO SLIDER (4.5s) - ĐÃ SỬA LỖI GIẬT ====================
+ // ==================== AUTO SLIDER (4.5s) - ĐÃ SỬA LỖI GIẬT ====================
 let autoSliderTimer = null;
 let isTouchingSlider = false; // Biến trạng thái đang vuốt slider ảnh
 
 function startAutoSlider() {
-    const slider = document.getElementById('slider');
-    
-    // Theo dõi trạng thái vuốt
-    slider.addEventListener('touchstart', () => { isTouchingSlider = true; });
-    slider.addEventListener('touchend', () => { isTouchingSlider = false; });
-    slider.addEventListener('mousedown', () => { isTouchingSlider = true; });
-    slider.addEventListener('mouseup', () => { isTouchingSlider = false; });
+const slider = document.getElementById('slider');
 
-    autoSliderTimer = setInterval(() => {
-        // Nếu đang vuốt tay hoặc modal đang mở thì KHÔNG tự động chạy
-        if (isTouchingSlider) return;
-        const modals = document.querySelectorAll('.modal-overlay.active');
-        if(modals.length > 0) return;
+// Theo dõi trạng thái vuốt
+slider.addEventListener('touchstart', () => { isTouchingSlider = true; });
+slider.addEventListener('touchend', () => { isTouchingSlider = false; });
+slider.addEventListener('mousedown', () => { isTouchingSlider = true; });
+slider.addEventListener('mouseup', () => { isTouchingSlider = false; });
 
-        // Lấy vị trí hiện tại thực tế
-        const slideWidth = slider.clientWidth;
-        const currentScroll = slider.scrollLeft;
-        const currentIndex = Math.round(currentScroll / slideWidth);
-        
-        // Tính index tiếp theo
-        let nextIndex = currentIndex + 1;
-        if (nextIndex >= 9) nextIndex = 0; // Quay về đầu nếu hết
+autoSliderTimer = setInterval(() => {
+// Nếu đang vuốt tay hoặc modal đang mở thì KHÔNG tự động chạy
+if (isTouchingSlider) return;
+const modals = document.querySelectorAll('.modal-overlay.active');
+if(modals.length > 0) return;
 
-        // Cuộn mượt đến vị trí mới
-        slider.scrollTo({ 
-            left: slideWidth * nextIndex, 
-            behavior: 'smooth' 
-        });
-        
-        // Cập nhật số hiển thị ngay lập tức
-        const indicator = document.getElementById('sliderIndicator');
-        indicator.textContent = `${nextIndex + 1}/9`;
+// Lấy vị trí hiện tại thực tế
+const slideWidth = slider.clientWidth;
+const currentScroll = slider.scrollLeft;
+const currentIndex = Math.round(currentScroll / slideWidth);
 
-    }, 4500); // Tăng thời gian lên 4.5s cho mượt hơn
+// Tính index tiếp theo
+let nextIndex = currentIndex + 1;
+if (nextIndex >= 9) nextIndex = 0; // Quay về đầu nếu hết
+
+// Cuộn mượt đến vị trí mới
+slider.scrollTo({ 
+left: slideWidth * nextIndex, 
+behavior: 'smooth' 
+});
+
+// Cập nhật số hiển thị ngay lập tức
+const indicator = document.getElementById('sliderIndicator');
+indicator.textContent = `${nextIndex + 1}/9`;
+
+}, 4500); // Tăng thời gian lên 4.5s cho mượt hơn
 }
     // ==================== BADGES ====================
     function startBadges() {
@@ -4559,24 +4558,24 @@ function startAutoSlider() {
     // ==================== UTILS ====================
     function formatPrice(num) {
     return new Intl.NumberFormat('vi-VN').format(num) + 'đ';
-    }// Toggle mute/unmute video
-    function toggleVideoMute() {
-        const video = document.getElementById('productVideo');
-        const btn = document.getElementById('unmuteBtn');
-        if (!video || !btn) return;
-        if (video.muted) {
-        video.muted = false;
-    userUnmuted = true;
-            btn.innerHTML = '🔊 Tắt tiếng';
-            btn.style.background = 'rgba(254,44,85,0.9)';
-            userInteracted = true; // Đánh dấu đã tương tác
-        } else {
-        video.muted = true;
-    userUnmuted = false;
-            btn.innerHTML = '🔇 Bật tiếng';
-            btn.style.background = 'rgba(0,0,0,0.7)';
-        }
-    }// ==================== TOGGLE PRODUCT TITLE ====================
+    }
+        // Toggle mute/unmute video (Đã sửa scope)
+function toggleVideoMute() {
+const video = document.getElementById('productVideo');
+const btn = document.getElementById('unmuteBtn');
+if (!video || !btn) return;
+
+if (video.muted) {
+video.muted = false;
+btn.innerHTML = '🔊 Tắt tiếng';
+btn.style.background = 'rgba(254,44,85,0.9)';
+} else {
+video.muted = true;
+btn.innerHTML = '🔇 Bật tiếng';
+btn.style.background = 'rgba(0,0,0,0.7)';
+}
+}
+        // ==================== TOGGLE PRODUCT TITLE ====================
     function toggleProductTitle() {
     const el = document.getElementById('productTitle');
     const isExpanded = el.classList.toggle('expanded');
