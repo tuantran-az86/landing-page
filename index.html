@@ -37,17 +37,20 @@
     -webkit-tap-highlight-color: transparent;
     }
     html { scroll-behavior: smooth; }
-/* SỬA LỖI FULLSCREEN VIDEO & NÚT ĐIỀU KHIỂN */
-video::-webkit-media-controls-fullscreen-button { display: none !important; }
-video::-webkit-media-controls-play-button { display: none !important; }
+/* KHÓA FULLSCREEN VIDEO & ẨN NÚT MẶC ĐỊNH */
+video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-play-button,
 video::-webkit-media-controls-start-playback-button { display: none !important; }
-video::-webkit-full-screen { width: 100% !important; height: auto !important; object-fit: cover !important; }
-video:-webkit-full-screen { width: 100% !important; height: auto !important; object-fit: cover !important; }
-video:fullscreen { width: 100% !important; height: auto !important; object-fit: cover !important; }
-/* Quan trọng: Khóa hành vi fullscreen của trình duyệt */
-video { 
-    object-fit: cover; 
-    pointer-events: auto; 
+video::cue { display: none !important; }
+video:-webkit-full-screen, video:fullscreen { 
+  width: 100% !important; height: 100% !important; 
+  object-fit: cover !important; background: #000 !important;
+}
+video {
+  object-fit: cover;
+  pointer-events: auto;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
     /* SỬA LỖI SCROLL DÀI */
@@ -189,36 +192,34 @@ video {
     pointer-events: none;
     z-index: 5;
     }
-    /* XTRA BADGES OVERLAY */
-    .xtra-badges {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    z-index: 6;
-    gap: 0;
-    pointer-events: none;
-    }
-    .xtra-badge {
-    padding: 8px 16px;
-    color: white;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #00bfa5, #00897b);
-    border-radius: 0 12px 0 0;
-    }
-    .xtra-extra {
-    background: linear-gradient(135deg, #4caf50, #388e3c);
-    border-radius: 0;
-    }
-    .xtra-extra strong {
-    font-size: 14px;
-    margin-left: 4px;
-    }
+   /* XTRA BADGES CHUẨN SHOPEE */
+.xtra-badges {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  gap: 4px;
+  padding: 0 0 8px 8px;
+  z-index: 6;
+  pointer-events: none;
+}
+.xtra-box {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  border-radius: 2px;
+  padding: 2px 6px;
+  min-width: 70px;
+  line-height: 1.25;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.xtra-top { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.xtra-bottom { font-size: 13px; }
+.xtra-box.freeship { background: linear-gradient(180deg, #00bfa5 0%, #009688 100%); border: 1px solid #00bfa5; }
+.xtra-box.extra { background: linear-gradient(180deg, #ee4d2d 0%, #ff7337 100%); border: 1px solid #ee4d2d; }
     /* FLOATING BADGES */
     .floating-badges {
     position: absolute;
@@ -2369,16 +2370,17 @@ video {
 
     </div>
     <div class="slider-indicator" id="sliderIndicator">1/9</div>
-    <!-- XTRA BADGES -->
-    <div class="xtra-badges">
-    <div class="xtra-badge xtra-freeship">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-    XTRA Freeship*
-    </div>
-    <div class="xtra-badge xtra-extra">
-    EXTRA lên đến <strong>14%*</strong>
-    </div>
-    </div>
+    <!-- XTRA BADGES CHUẨN SHOPEE -->
+<div class="xtra-badges">
+  <div class="xtra-box freeship">
+    <span class="xtra-top">XTRA</span>
+    <span class="xtra-bottom">Freeship*</span>
+  </div>
+  <div class="xtra-box extra">
+    <span class="xtra-top">EXTRA</span>
+    <span class="xtra-bottom">lên đến 14%*</span>
+  </div>
+</div>
     <!-- FLOATING BADGES -->
     <div class="floating-badges" id="floatingBadges"></div>
     </div>
@@ -2687,17 +2689,18 @@ video {
     <div class="video-demo-section" style="padding: 12px 0;">
         <div class="detail-title">🎥 Video giới thiệu sản phẩm</div>
     <div class="video-player-container" style="position: relative; width: 100%; padding-bottom: 177.78%; background: #000; border-radius: 12px; overflow: hidden;">
-      <video
-    id="productVideo"
-    width="100%"
-    height="100%"
-    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
-    muted
-    playsinline
-    webkit-playsinline
-    x5-playsinline
-    loop
-    preload="metadata"
+  <video
+id="productVideo"
+width="100%"
+height="100%"
+style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
+muted
+playsinline
+webkit-playsinline
+x5-playsinline
+disablePictureInPicture
+loop
+preload="auto"
 >
     <source src="demo.mp4" type="video/mp4">
     <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
@@ -3634,60 +3637,38 @@ video {
     setupTabs();
     startAutoSlider();
     startFakeNotifications();
- // --- VIDEO AUTO PLAY/PAUSE KHI SCROLL ---
+// --- VIDEO PLAY/PAUSE & UNMUTE CHUẨN MOBILE ---
 const videoEl = document.getElementById('productVideo');
 const unmuteBtn = document.getElementById('unmuteBtn');
-let userInteracted = false; // Cờ đánh dấu người dùng đã chạm vào màn hình
 
 if (videoEl) {
-// 1. Tự động Play (Muted) khi vào trang
-videoEl.play().catch(e => console.log("Autoplay blocked need interaction"));
-
-// 2. Observer để Pause khi cuộn đi chỗ khác
-const videoObserver = new IntersectionObserver((entries) => {
-entries.forEach(entry => {
-if (entry.isIntersecting) {
-videoEl.play().catch(() => {});
-} else {
-videoEl.pause();
-}
-});
-}, { threshold: 0.5 }); // Chỉ cần hiện 50% là play
-videoObserver.observe(videoEl);
+  videoEl.play().catch(() => {});
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) videoEl.play().catch(() => {});
+      else videoEl.pause();
+    });
+  }, { threshold: 0.4 });
+  videoObserver.observe(videoEl);
 }
 
-// 3. Xử lý nút Bật/Tắt tiếng
 if (unmuteBtn && videoEl) {
-unmuteBtn.onclick = function(e) {
-e.stopPropagation(); // Ngăn lan sự kiện click
-
-// Yêu cầu user interaction để bật tiếng
-if (!userInteracted) userInteracted = true;
-
-if (videoEl.muted) {
-videoEl.muted = false; 
-unmuteBtn.innerHTML = '🔊 Tắt tiếng';
-unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
-} else {
-videoEl.muted = true;
-unmuteBtn.innerHTML = '🔇 Bật tiếng';
-unmuteBtn.style.background = 'rgba(0,0,0,0.7)';
+  unmuteBtn.onclick = (e) => {
+    e.stopPropagation();
+    userInteracted = true;
+    if (videoEl.muted) {
+      videoEl.muted = false;
+      unmuteBtn.innerHTML = '🔊 Tắt tiếng';
+      unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
+    } else {
+      videoEl.muted = true;
+      unmuteBtn.innerHTML = '🔇 Bật tiếng';
+      unmuteBtn.style.background = 'rgba(0,0,0,0.7)';
+    }
+  };
 }
-};
-}
-
-// 4. Lắng nghe tương tác đầu tiên trên toàn trang để cho phép unmute
-document.addEventListener('click', function handleFirstInteraction() {
-if (!userInteracted) {
-userInteracted = true;
-// Nếu video đang chạy mà bị mute, thử unmute nhẹ nhàng
-if (videoEl && videoEl.muted && !videoEl.paused) {
-// Không tự unmute ngay lập tức để tránh giật mình, 
-// chờ người dùng bấm nút unmuteBtn thì sẽ hoạt động ngay nhờ cờ userInteracted = true
-}
-}
-}, { once: true }); // Chỉ chạy 1 lần
-// --- KẾT THÚC CODE SỬA LỖI VIDEO ---
+document.addEventListener('click', () => { if (!userInteracted) userInteracted = true; }, { once: true });
+// --- KẾT THÚC ---
     updateDeliveryTime();
     loadAddressData(); // Gọi API địa chỉ ngay khi load
     });
@@ -3911,45 +3892,29 @@ if (videoEl && videoEl.muted && !videoEl.paused) {
         slider.addEventListener('mouseup', () => isDragging = false);
         slider.addEventListener('touchend', () => isDragging = false);
     }
- // ==================== AUTO SLIDER (4.5s) - ĐÃ SỬA LỖI GIẬT ====================
+// ==================== AUTO SLIDER (4.5s) - CHUẨN MOBILE ====================
 let autoSliderTimer = null;
-let isTouchingSlider = false; // Biến trạng thái đang vuốt slider ảnh
-
+let isTouchingSlider = false;
 function startAutoSlider() {
-const slider = document.getElementById('slider');
+  const slider = document.getElementById('slider');
+  const indicator = document.getElementById('sliderIndicator');
+  
+  slider.addEventListener('touchstart', () => { isTouchingSlider = true; });
+  slider.addEventListener('touchend', () => { isTouchingSlider = false; });
+  slider.addEventListener('mousedown', () => { isTouchingSlider = true; });
+  slider.addEventListener('mouseup', () => { isTouchingSlider = false; });
 
-// Theo dõi trạng thái vuốt
-slider.addEventListener('touchstart', () => { isTouchingSlider = true; });
-slider.addEventListener('touchend', () => { isTouchingSlider = false; });
-slider.addEventListener('mousedown', () => { isTouchingSlider = true; });
-slider.addEventListener('mouseup', () => { isTouchingSlider = false; });
+  autoSliderTimer = setInterval(() => {
+    if (isTouchingSlider) return;
+    if (document.querySelectorAll('.modal-overlay.active').length > 0) return;
 
-autoSliderTimer = setInterval(() => {
-// Nếu đang vuốt tay hoặc modal đang mở thì KHÔNG tự động chạy
-if (isTouchingSlider) return;
-const modals = document.querySelectorAll('.modal-overlay.active');
-if(modals.length > 0) return;
+    const slideWidth = slider.clientWidth;
+    const currentIndex = Math.round(slider.scrollLeft / slideWidth);
+    let nextIndex = (currentIndex + 1) % 9;
 
-// Lấy vị trí hiện tại thực tế
-const slideWidth = slider.clientWidth;
-const currentScroll = slider.scrollLeft;
-const currentIndex = Math.round(currentScroll / slideWidth);
-
-// Tính index tiếp theo
-let nextIndex = currentIndex + 1;
-if (nextIndex >= 9) nextIndex = 0; // Quay về đầu nếu hết
-
-// Cuộn mượt đến vị trí mới
-slider.scrollTo({ 
-left: slideWidth * nextIndex, 
-behavior: 'smooth' 
-});
-
-// Cập nhật số hiển thị ngay lập tức
-const indicator = document.getElementById('sliderIndicator');
-indicator.textContent = `${nextIndex + 1}/9`;
-
-}, 4500); // Tăng thời gian lên 4.5s cho mượt hơn
+    slider.scrollTo({ left: slideWidth * nextIndex, behavior: 'smooth' });
+    indicator.textContent = `${nextIndex + 1}/9`;
+  }, 4500);
 }
     // ==================== BADGES ====================
     function startBadges() {
