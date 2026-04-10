@@ -37,6 +37,11 @@
     -webkit-tap-highlight-color: transparent;
     }
     html { scroll-behavior: smooth; }
+        /* Ẩn nút fullscreen video trên mobile */
+video::-webkit-media-controls-fullscreen-button { display: none !important; }
+video::-webkit-full-screen { width: 100% !important; height: auto !important; }
+video:-webkit-full-screen { width: 100% !important; height: auto !important; }
+video:fullscreen { width: 100% !important; height: auto !important; }
     /* SỬA LỖI SCROLL DÀI */
     body {
     font-family: var(--font);
@@ -2684,6 +2689,7 @@
             playsinline
             loop
             preload="metadata"
+            webkit-playsinline
         >
             <source src="demo.mp4" type="video/mp4">
             <!-- Fallback: Sử dụng video online để test -->
@@ -4579,14 +4585,7 @@ function toggleCreatorVideo(container) {
       overlay.style.opacity = '0';
     }).catch(e => console.log('Autoplay prevented:', e));
     
-    // Request fullscreen on mobile
-    if (video.requestFullscreen) {
-      video.requestFullscreen().catch(e => console.log('Fullscreen denied:', e));
-    } else if (video.webkitRequestFullscreen) {
-      video.webkitRequestFullscreen();
-    } else if (video.webkitEnterFullscreen) {
-      video.webkitEnterFullscreen();
-    }
+  
   } else {
     video.pause();
     overlay.style.opacity = '1';
