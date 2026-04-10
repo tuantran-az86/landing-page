@@ -37,11 +37,19 @@
     -webkit-tap-highlight-color: transparent;
     }
     html { scroll-behavior: smooth; }
-        /* Ẩn nút fullscreen video trên mobile */
+/* SỬA LỖI FULLSCREEN VIDEO & NÚT ĐIỀU KHIỂN */
 video::-webkit-media-controls-fullscreen-button { display: none !important; }
-video::-webkit-full-screen { width: 100% !important; height: auto !important; }
-video:-webkit-full-screen { width: 100% !important; height: auto !important; }
-video:fullscreen { width: 100% !important; height: auto !important; }
+video::-webkit-media-controls-play-button { display: none !important; }
+video::-webkit-media-controls-start-playback-button { display: none !important; }
+video::-webkit-full-screen { width: 100% !important; height: auto !important; object-fit: cover !important; }
+video:-webkit-full-screen { width: 100% !important; height: auto !important; object-fit: cover !important; }
+video:fullscreen { width: 100% !important; height: auto !important; object-fit: cover !important; }
+/* Quan trọng: Khóa hành vi fullscreen của trình duyệt */
+video { 
+    object-fit: cover; 
+    pointer-events: auto; 
+}
+
     /* SỬA LỖI SCROLL DÀI */
     body {
     font-family: var(--font);
@@ -2679,23 +2687,21 @@ video:fullscreen { width: 100% !important; height: auto !important; }
     <div class="video-demo-section" style="padding: 12px 0;">
         <div class="detail-title">🎥 Video giới thiệu sản phẩm</div>
     <div class="video-player-container" style="position: relative; width: 100%; padding-bottom: 177.78%; background: #000; border-radius: 12px; overflow: hidden;">
-        <video
-            id="productVideo"
-            width="100%"
-            height="100%"
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
-            controls
-            muted
-            playsinline
-            loop
-            preload="metadata"
-            webkit-playsinline
-        >
-            <source src="demo.mp4" type="video/mp4">
-            <!-- Fallback: Sử dụng video online để test -->
-            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
-            Trình duyệt của bạn không hỗ trợ video.
-        </video>
+      <video
+    id="productVideo"
+    width="100%"
+    height="100%"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
+    muted
+    playsinline
+    webkit-playsinline
+    x5-playsinline
+    loop
+    preload="metadata"
+>
+    <source src="demo.mp4" type="video/mp4">
+    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+</video>
         <button id="unmuteBtn" onclick="toggleVideoMute()" style="position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; z-index: 10; font-size: 14px;">
             🔇 Bật tiếng
         </button>
@@ -3629,54 +3635,60 @@ video:fullscreen { width: 100% !important; height: auto !important; }
     setupTabs();
     startAutoSlider();
     startFakeNotifications();
-    // --- VIDEO AUTO PLAY/PAUSE KHI SCROLL ---
+  // --- VIDEO AUTO PLAY/PAUSE & AUDIO LOGIC ---
+const videoEl = document.getElementById('productVideo');
+const unmuteBtn = document.getElementById('unmuteBtn');
+let userInteracted = false; // Cờ đánh dấu người dùng đã chạm vào màn hình
 
-    const videoEl = document.getElementById('productVideo');
-    if (videoEl) {
-        videoEl.muted = true;
+if (videoEl) {
+    // 1. Tự động Play (Muted) khi vào trang
+    videoEl.play().catch(e => console.log("Autoplay blocked need interaction"));
+
+    // 2. Observer để Pause khi cuộn đi chỗ khác
     const videoObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    videoEl.play().catch(() => {});
-                } else {
-                    videoEl.pause();
-                }
-            });
-        }, { threshold: 0.3 });
-        videoObserver.observe(videoEl);
-    }
-    // 2. Xử lý nút Bật/Tắt tiếng
-    if (unmuteBtn) {
-        unmuteBtn.onclick = function(e) {
-            e.stopPropagation(); // Ngăn sự kiện click lan ra ngoài
-            userInteracted = true; // Đánh dấu đã tương tác
-            
-            if (videoEl.muted) {
-                videoEl.muted = false; // Bật tiếng
-                unmuteBtn.innerHTML = '🔊 Tắt tiếng';
-                unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
-                console.log('User unmute video');
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                videoEl.play().catch(() => {});
             } else {
-                videoEl.muted = true; // Tắt tiếng
-                unmuteBtn.innerHTML = '🔇 Bật tiếng';
-                unmuteBtn.style.background = 'rgba(0,0,0,0.7)';
-                console.log('User mute video');
+                videoEl.pause();
             }
-        };
-    }
+        });
+    }, { threshold: 0.5 }); // Chỉ cần hiện 50% là play
+    videoObserver.observe(videoEl);
+}
 
-    // 3. Click bất kỳ đâu trên trang cũng cho phép unmute
-    document.addEventListener('click', function handleFirstClick() {
-        if (!userInteracted) {
-            userInteracted = true;
-            console.log('User interacted - video can now play with sound');
-            if (videoEl && !videoEl.muted && videoEl.paused) {
-                videoEl.play();
-            }
+// 3. Xử lý nút Bật/Tắt tiếng
+if (unmuteBtn && videoEl) {
+    unmuteBtn.onclick = function(e) {
+        e.stopPropagation(); // Ngăn lan sự kiện click
+        
+        // Yêu cầu user interaction để bật tiếng
+        if (!userInteracted) userInteracted = true;
+
+        if (videoEl.muted) {
+            videoEl.muted = false; 
+            unmuteBtn.innerHTML = '🔊 Tắt tiếng';
+            unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
+        } else {
+            videoEl.muted = true;
+            unmuteBtn.innerHTML = '🔇 Bật tiếng';
+            unmuteBtn.style.background = 'rgba(0,0,0,0.7)';
         }
-        document.removeEventListener('click', handleFirstClick);
-    }, { once: true });
-    // --- KẾT THÚC CODE SỬA LỖI VIDEO & AUDIO ---
+    };
+}
+
+// 4. Lắng nghe tương tác đầu tiên trên toàn trang để cho phép unmute
+document.addEventListener('click', function handleFirstInteraction() {
+    if (!userInteracted) {
+        userInteracted = true;
+        // Nếu video đang chạy mà bị mute, thử unmute nhẹ nhàng
+        if (videoEl && videoEl.muted && !videoEl.paused) {
+            // Không tự unmute ngay lập tức để tránh giật mình, 
+            // chờ người dùng bấm nút unmuteBtn thì sẽ hoạt động ngay nhờ cờ userInteracted = true
+        }
+    }
+}, { once: true }); // Chỉ chạy 1 lần
+// --- KẾT THÚC CODE SỬA LỖI VIDEO ---
     updateDeliveryTime();
     loadAddressData(); // Gọi API địa chỉ ngay khi load
     });
@@ -3809,11 +3821,7 @@ video:fullscreen { width: 100% !important; height: auto !important; }
             }
         }, 15000);
     }
-        
-
-    // ==================== SLIDER ====================
     // ==================== SLIDER & GALLERY LOGIC ====================
-
     // Hàm mở Gallery toàn màn hình
     window.openGallery = function() {
         const gallery = document.getElementById('fullScreenGallery');
@@ -3904,29 +3912,46 @@ video:fullscreen { width: 100% !important; height: auto !important; }
         slider.addEventListener('mouseup', () => isDragging = false);
         slider.addEventListener('touchend', () => isDragging = false);
     }
-    // ==================== AUTO SLIDER (4.5s) ====================
-    let autoSliderTimer = null;
-    let isTouching = false; // Biến trạng thái đang vuốt
+   // ==================== AUTO SLIDER (4.5s) - ĐÃ SỬA LỖI GIẬT ====================
+let autoSliderTimer = null;
+let isTouchingSlider = false; // Biến trạng thái đang vuốt slider ảnh
 
-    function startAutoSlider() {
-    let slideIndex = 0;
+function startAutoSlider() {
     const slider = document.getElementById('slider');
-    slider.addEventListener('touchstart', () => { isTouching = true; });
-    slider.addEventListener('touchend', () => { isTouching = false; });
+    
+    // Theo dõi trạng thái vuốt
+    slider.addEventListener('touchstart', () => { isTouchingSlider = true; });
+    slider.addEventListener('touchend', () => { isTouchingSlider = false; });
+    slider.addEventListener('mousedown', () => { isTouchingSlider = true; });
+    slider.addEventListener('mouseup', () => { isTouchingSlider = false; });
 
     autoSliderTimer = setInterval(() => {
-    // Nếu đang vuốt hoặc modal đang mở thì không slide
-    if (isTouching) return;
-    const modals = document.querySelectorAll('.modal-overlay.active');
-    if(modals.length > 0) return;
+        // Nếu đang vuốt tay hoặc modal đang mở thì KHÔNG tự động chạy
+        if (isTouchingSlider) return;
+        const modals = document.querySelectorAll('.modal-overlay.active');
+        if(modals.length > 0) return;
 
-    slideIndex = (slideIndex + 1) % 9;
-    const slideWidth = slider.clientWidth;
-    slider.scrollTo({ left: slideWidth * slideIndex, behavior: 'smooth' });
-    const indicator = document.getElementById('sliderIndicator');
-    indicator.textContent = `${slideIndex + 1}/9`;
-    }, 4300);
-    }
+        // Lấy vị trí hiện tại thực tế
+        const slideWidth = slider.clientWidth;
+        const currentScroll = slider.scrollLeft;
+        const currentIndex = Math.round(currentScroll / slideWidth);
+        
+        // Tính index tiếp theo
+        let nextIndex = currentIndex + 1;
+        if (nextIndex >= 9) nextIndex = 0; // Quay về đầu nếu hết
+
+        // Cuộn mượt đến vị trí mới
+        slider.scrollTo({ 
+            left: slideWidth * nextIndex, 
+            behavior: 'smooth' 
+        });
+        
+        // Cập nhật số hiển thị ngay lập tức
+        const indicator = document.getElementById('sliderIndicator');
+        indicator.textContent = `${nextIndex + 1}/9`;
+
+    }, 4500); // Tăng thời gian lên 4.5s cho mượt hơn
+}
     // ==================== BADGES ====================
     function startBadges() {
     const container = document.getElementById('floatingBadges');
