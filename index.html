@@ -180,10 +180,9 @@ video {
 .slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Lấp đầy khung, không co nhỏ, không thừa khoảng trắng */
+  object-fit: cover; /* Lấp đầy khung, chuẩn TMĐT */
   display: block;
   pointer-events: none; /* Chống drag ảnh gây lag */
-  transform: translateZ(0); /* Ép GPU render, chống giật khi vuốt */
 }
     .slider-indicator {
     position: absolute;
@@ -3892,56 +3891,30 @@ let currentSlideIdx = 0; // Biến lưu vị trí ảnh hiện tại
 function startAutoSlider() {
   const slider = document.getElementById('slider');
   const indicator = document.getElementById('sliderIndicator');
-  let autoTimer = null;
-  let isAutoRunning = false;
+  let isAutoScrolling = false; // Flag chống xung đột sự kiện
 
-  // Hàm đồng bộ chỉ số slide chính xác nhất
-  function syncIndex() {
-    const slideWidth = slider.clientWidth;
-    currentSlideIdx = Math.round(slider.scrollLeft / slideWidth);
-    indicator.textContent = `${currentSlideIdx + 1}/9`;
-  }
-
-  // Lắng nghe sự kiện vuốt tay để cập nhật vị trí ngay lập tức
-  slider.addEventListener('touchend', syncIndex);
-  slider.addEventListener('mouseup', syncIndex);
-
-  // Hàm chạy auto slide không giật
-  function runAuto() {
-    if (autoTimer) clearInterval(autoTimer);
-    autoTimer = setInterval(() => {
-      if (isTouchingSlider || document.querySelectorAll('.modal-overlay.active').length > 0) return;
-
-      // Tăng index dựa trên vị trí hiện tại (đáp ứng yêu cầu 3: tiếp nối từ ảnh đang xem)
-      currentSlideIdx = (currentSlideIdx + 1) % 9;
-      isAutoRunning = true;
-
-      // Tạm tắt scroll-snap để JS scroll không bị CSS giật
-      slider.style.scrollSnapType = 'none';
-      const slideWidth = slider.clientWidth;
-      slider.scrollTo({ left: slideWidth * currentSlideIdx, behavior: 'smooth' });
+  // Đồng bộ vị trí ảnh khi người dùng vuốt xong HOẶC auto-slide kết thúc
+  slider.addEventListener('scrollend', () => {
+    if (!isAutoScrolling) {
+      currentSlideIdx = Math.round(slider.scrollLeft / slider.clientWidth);
       indicator.textContent = `${currentSlideIdx + 1}/9`;
-
-      // Bật lại snap sau khi animation kết thúc (~400ms)
-      setTimeout(() => {
-        slider.style.scrollSnapType = 'x mandatory';
-        isAutoRunning = false;
-      }, 400);
-    }, 4500);
-  }
-
-  // Chặn auto slide khi người dùng chạm, reset timer khi thả tay
-  slider.addEventListener('touchstart', () => {
-    isTouchingSlider = true;
-    if (autoTimer) clearInterval(autoTimer);
-  });
-  slider.addEventListener('touchend', () => {
-    isTouchingSlider = false;
-    syncIndex(); // Cập nhật lại vị trí chính xác sau khi vuốt
-    setTimeout(runAuto, 1500); // Đợi 1.5s rồi chạy tiếp từ vị trí đó
+    }
   });
 
-  runAuto();
+  autoSliderTimer = setInterval(() => {
+    if (isTouchingSlider || document.querySelectorAll('.modal-overlay.active').length > 0) return;
+    
+    // Tính vị trí tiếp theo dựa trên ảnh đang xem (đáp ứng yêu cầu 3)
+    currentSlideIdx = (currentSlideIdx + 1) % 9;
+    isAutoScrolling = true;
+
+    const slideWidth = slider.clientWidth;
+    slider.scrollTo({ left: slideWidth * currentSlideIdx, behavior: 'smooth' });
+    indicator.textContent = `${currentSlideIdx + 1}/9`;
+
+    // Tắt flag sau khi animation xong (khoảng 400ms)
+    setTimeout(() => { isAutoScrolling = false; }, 400);
+  }, 4500);
 }
     // ==================== BADGES ====================
     function startBadges() {
