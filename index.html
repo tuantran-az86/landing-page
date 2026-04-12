@@ -37,25 +37,20 @@
     -webkit-tap-highlight-color: transparent;
     }
     html { scroll-behavior: smooth; }
-/* KHÓA FULLSCREEN VIDEO & ẨN NÚT MẶC ĐỊNH */
+/* CHẶN TOÀN BỘ FULLSCREEN & CONTROLS TRÊN MOBILE */
 video::-webkit-media-controls-fullscreen-button,
 video::-webkit-media-controls-play-button,
 video::-webkit-media-controls-start-playback-button { display: none !important; }
 video::cue { display: none !important; }
-/* CHẶN HOÀN TOÀN FULLSCREEN TRÊN MOBILE */
-video:-webkit-full-screen, video:fullscreen {
-    display: none !important; /* Ẩn chế độ fullscreen đi */
-}
-video::-webkit-media-controls {
-    display: none !important; /* Ẩn thanh điều khiển gốc */
-}
+video:-webkit-full-screen, video:fullscreen { display: none !important; }
+video::-webkit-media-controls { display: none !important; }
 video {
   object-fit: cover;
   pointer-events: auto;
   -webkit-user-select: none;
   user-select: none;
+  max-height: 100vh;
 }
-
     /* SỬA LỖI SCROLL DÀI */
     body {
     font-family: var(--font);
@@ -146,14 +141,14 @@ video {
     justify-content: center;
     }
     /* ==================== SLIDER ==================== */
-     .slider-container {
-    position: relative;
-    width: 100%;
-    height: 60vh; /* Tự động theo 60% chiều cao màn hình mobile */
-    max-height: 450px;
-    min-height: 320px;
-    background: var(--bg-secondary);
-    overflow: hidden;
+   .slider-container {
+  position: relative;
+  width: 100%;
+  height: 75vh; /* Tối ưu hiển thị lớn trên mobile, chuẩn app TMĐT */
+  max-height: 500px;
+  min-height: 360px;
+  background: var(--bg-secondary);
+  overflow: hidden;
 }
   .slider {
   display: flex;
@@ -180,9 +175,10 @@ video {
 .slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ảnh full khung, chuẩn Shopee/TikTok */
+  object-fit: cover; /* Lấp đầy khung, không co nhỏ, không thừa khoảng trắng */
   display: block;
-  pointer-events: none; /* Chống drag ảnh gây lag */
+  pointer-events: none;
+  transform: translateZ(0); /* Ép GPU render, chống lag khi vuốt */
 }
     .slider-indicator {
     position: absolute;
@@ -2694,15 +2690,16 @@ video {
   height="100%"
   style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
   muted
-  playsinline
-  webkit-playsinline
-  x5-playsinline
-  x5-video-player-type="h5-page"
+  playsinline="true"
+  webkit-playsinline="true"
+  x5-playsinline="true"
+  x5-video-player-type="h5"
   x5-video-player-fullscreen="false"
   disablePictureInPicture
+  controlsList="nodownload nofullscreen"
   loop
   preload="auto"
-  onclick="this.paused ? this.play() : this.pause();"
+  onclick="handleVideoClick(this)"
 >
     <source src="demo.mp4" type="video/mp4">
     <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
@@ -3672,10 +3669,14 @@ if (unmuteBtn && videoEl) {
 document.addEventListener('click', () => { if (!userInteracted) userInteracted = true; }, { once: true });
 
 // Hàm xử lý Click vào Video Demo để Fullscreen
-window.toggleDemoVideo = function(videoEl) {
-  // Chỉ xử lý Play/Pause, không kích hoạt fullscreen
+window.handleVideoClick = function(videoEl) {
+  if (!videoEl) return;
+  // Chặn mọi hành vi fullscreen mặc định của trình duyệt khi chạm
+  if (videoEl.requestFullscreen) videoEl.exitFullscreen().catch(()=>{});
+  if (videoEl.webkitExitFullscreen) videoEl.webkitExitFullscreen();
+
   if (videoEl.paused) {
-    videoEl.play().catch(() => {});
+    videoEl.play().catch(err => console.log('Play blocked:', err));
   } else {
     videoEl.pause();
   }
@@ -3912,30 +3913,53 @@ let currentSlideIdx = 0; // Biến lưu vị trí ảnh hiện tại
 function startAutoSlider() {
   const slider = document.getElementById('slider');
   const indicator = document.getElementById('sliderIndicator');
-  let isAutoScrolling = false; // Flag chống xung đột sự kiện
+  let autoTimer = null;
+  let currentIdx = 0;
 
-  // Đồng bộ vị trí ảnh khi người dùng vuốt xong HOẶC auto-slide kết thúc
-  slider.addEventListener('scrollend', () => {
-    if (!isAutoScrolling) {
-      currentSlideIdx = Math.round(slider.scrollLeft / slider.clientWidth);
-      indicator.textContent = `${currentSlideIdx + 1}/9`;
-    }
+  // 1. Theo dõi chính xác ảnh đang hiển thị (Chuẩn Shopee/TikTok)
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+        const slides = Array.from(slider.children);
+        currentIdx = slides.indexOf(entry.target);
+        indicator.textContent = `${currentIdx + 1}/9`;
+      }
+    });
+  }, { root: slider, threshold: 0.5 });
+
+  document.querySelectorAll('.slide').forEach(slide => observer.observe(slide));
+
+  // 2. Hàm chuyển slide mượt, tắt snap tạm thời để CHỐNG GIẬT
+  function goToSlide(index) {
+    slider.style.scrollSnapType = 'none'; // Tắt snap để JS scroll không bị CSS giành quyền
+    const slideWidth = slider.clientWidth;
+    slider.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
+    indicator.textContent = `${index + 1}/9`;
+    // Bật lại snap sau khi cuộn xong (350ms khớp với smooth scroll)
+    setTimeout(() => { slider.style.scrollSnapType = 'x mandatory'; }, 350);
+  }
+
+  // 3. Auto Slide Logic
+  function startAuto() {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = setInterval(() => {
+      if (isTouchingSlider || document.querySelector('.modal-overlay.active')) return;
+      currentIdx = (currentIdx + 1) % 9; // Luôn tiếp nối từ ảnh hiện tại
+      goToSlide(currentIdx);
+    }, 4000);
+  }
+
+  // 4. Xử lý vuốt tay: reset timer, tránh xung đột
+  slider.addEventListener('touchstart', () => {
+    if (autoTimer) clearInterval(autoTimer);
+    isTouchingSlider = true;
+  });
+  slider.addEventListener('touchend', () => {
+    isTouchingSlider = false;
+    setTimeout(startAuto, 1500); // Đợi 1.5s sau khi ngừng vuốt mới chạy lại
   });
 
-  autoSliderTimer = setInterval(() => {
-    if (isTouchingSlider || document.querySelectorAll('.modal-overlay.active').length > 0) return;
-    
-    // Tính vị trí tiếp theo dựa trên ảnh đang xem (đáp ứng yêu cầu 3)
-    currentSlideIdx = (currentSlideIdx + 1) % 9;
-    isAutoScrolling = true;
-
-    const slideWidth = slider.clientWidth;
-    slider.scrollTo({ left: slideWidth * currentSlideIdx, behavior: 'smooth' });
-    indicator.textContent = `${currentSlideIdx + 1}/9`;
-
-    // Tắt flag sau khi animation xong (khoảng 400ms)
-    setTimeout(() => { isAutoScrolling = false; }, 400);
-  }, 4500);
+  startAuto();
 }
     // ==================== BADGES ====================
     function startBadges() {
