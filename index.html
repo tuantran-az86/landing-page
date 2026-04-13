@@ -3860,86 +3860,75 @@ window.toggleDemoVideo = function(videoEl) {
     };
 
     // Hàm render Slider (Đã sửa lỗi giật bằng scrollend)
-    function renderSlider() {
-        const slider = document.getElementById('slider');
-        const indicator = document.getElementById('sliderIndicator');
-        const galleryCounter = document.getElementById('galleryCounter');
-        const galleryImg = document.getElementById('galleryMainImage');
-
-        // Sử dụng 'scrollend' thay vì 'scroll' để tránh giật số
-        // Số chỉ cập nhật khi người dùng ngừng vuốt/cuộn
-        slider.addEventListener('scrollend', () => {
-            const idx = Math.round(slider.scrollLeft / slider.clientWidth);
-            const countText = `${idx + 1}/9`;
-            
-            // Cập nhật số ở slider chính
-            indicator.textContent = countText;
-            
-            // Nếu Gallery đang mở, cũng cập nhật số và ảnh trong Gallery luôn
-            if(document.getElementById('fullScreenGallery').style.display === 'flex') {
-                galleryCounter.textContent = countText;
-                const slides = document.querySelectorAll('.slide');
-                if(slides[idx]) {
-                    galleryImg.src = slides[idx].querySelector('img').src;
-                }
-            }
-        });
-
-        // Thêm sự kiện click vào slider container để mở Gallery
-        // Lưu ý: Chỉ mở khi click, không mở khi đang vuốt (swipe)
-        let isDragging = false;
-        slider.addEventListener('mousedown', () => isDragging = true);
-        slider.addEventListener('touchstart', () => isDragging = true);
-        
-        slider.addEventListener('click', (e) => {
-            // Nếu vừa vuốt thì không mở gallery
-            if(isDragging) {
-                setTimeout(() => isDragging = false, 100);
-                return;
-            }
-            openGallery();
-        });
-        
-        slider.addEventListener('mouseup', () => isDragging = false);
-        slider.addEventListener('touchend', () => isDragging = false);
-    }
-// ==================== AUTO SLIDER (CHUẨN MOBILE - KHÔNG GIẬT) ====================
-let autoSliderTimer = null;
-let isTouchingSlider = false;
-let currentSlideIdx = 0; // Biến lưu vị trí ảnh hiện tại
-
-function startAutoSlider() {
+function renderSlider() {
     const slider = document.getElementById('slider');
     const indicator = document.getElementById('sliderIndicator');
+    const galleryCounter = document.getElementById('galleryCounter');
+    const galleryImg = document.getElementById('galleryMainImage');
 
-    // Lắng kiện vuốt tay để cập nhật vị trí ảnh
-    slider.addEventListener('touchend', () => { 
-        isTouchingSlider = false; 
-        // Cập nhật lại vị trí ảnh sau khi vuốt xong
-        setTimeout(() => {
+    let scrollDebounce = null;
+    let touchStartX = 0;
+    let isSwiping = false;
+
+    // === TOUCH: pause auto-slide khi user chạm ===
+    slider.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        isSwiping = false;
+        clearInterval(autoSliderTimer); // tạm dừng khi chạm
+    }, { passive: true });
+
+    slider.addEventListener('touchmove', (e) => {
+        if (Math.abs(e.touches[0].clientX - touchStartX) > 8) isSwiping = true;
+    }, { passive: true });
+
+    // === TOUCH END: cập nhật số đúng + restart timer 2.5s ===
+    slider.addEventListener('touchend', () => {
+        clearTimeout(scrollDebounce);
+        scrollDebounce = setTimeout(() => {
             currentSlideIdx = Math.round(slider.scrollLeft / slider.clientWidth);
-            indicator.textContent = `${currentSlideIdx + 1}/9`;
-        }, 100);
+            const countText = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+            indicator.textContent = countText;
+
+            if (document.getElementById('fullScreenGallery').style.display === 'flex') {
+                galleryCounter.textContent = countText;
+                const slides = document.querySelectorAll('.slide');
+                if (slides[currentSlideIdx]) {
+                    galleryImg.src = slides[currentSlideIdx].querySelector('img').src;
+                }
+            }
+            // Restart auto-slide sau 2.5s kể từ lúc user thả tay
+            startAutoSlider();
+        }, 150);
     });
-    
-    slider.addEventListener('touchstart', () => { isTouchingSlider = true; });
 
-    // Chạy bộ đếm thời gian
+    // === SCROLL (desktop mouse drag) ===
+    slider.addEventListener('scroll', () => {
+        clearTimeout(scrollDebounce);
+        scrollDebounce = setTimeout(() => {
+            currentSlideIdx = Math.round(slider.scrollLeft / slider.clientWidth);
+            indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+        }, 100);
+    }, { passive: true });
+
+    // === CLICK mở gallery (chỉ khi không swipe) ===
+    slider.addEventListener('click', () => {
+        if (!isSwiping) openGallery();
+    });
+}
+// ==================== AUTO SLIDER ====================
+let autoSliderTimer = null;
+let currentSlideIdx = 0;
+const SLIDE_TOTAL = 9;
+
+function startAutoSlider() {
+    clearInterval(autoSliderTimer);
     autoSliderTimer = setInterval(() => {
-        // Nếu đang vuốt hoặc đang mở popup thì dừng
-        if (isTouchingSlider) return;
         if (document.querySelectorAll('.modal-overlay.active').length > 0) return;
-
-        // Tăng vị trí ảnh lên 1
-        currentSlideIdx = (currentSlideIdx + 1) % 9;
-        
-        // Cuộn mượt đến ảnh mới
-        const slideWidth = slider.clientWidth;
-        slider.scrollTo({ left: slideWidth * currentSlideIdx, behavior: 'smooth' });
-        
-        // Cập nhật số hiển thị
-        indicator.textContent = `${currentSlideIdx + 1}/9`;
-    }, 4500); // 4.5 giây
+        const slider = document.getElementById('slider');
+        currentSlideIdx = (currentSlideIdx + 1) % SLIDE_TOTAL;
+        slider.scrollTo({ left: slider.clientWidth * currentSlideIdx, behavior: 'smooth' });
+        document.getElementById('sliderIndicator').textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+    }, 2500);
 }
     // ==================== BADGES ====================
     function startBadges() {
