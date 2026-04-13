@@ -2,11 +2,7 @@
     <html lang="vi">
     <head>
     <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>[ Form CLEAN FIT ] Áo thun clean fit tôn bờ vai | MH Home</title>
     <style>
     :root {
@@ -61,36 +57,24 @@ video {
 }
 
     /* SỬA LỖI SCROLL DÀI */
-body {
-font-family: var(--font);
-background: #e8e8e8;
-color: var(--text-main);
-line-height: 1.4;
-display: flex;
-justify-content: center;
--webkit-text-size-adjust: 100%;
--ms-text-size-adjust: 100%;
--webkit-tap-highlight-color: transparent;
-overflow-x: hidden;
-width: 100%;
-min-height: 100vh;
-min-height: 100dvh;
-}
-   .app-container {
-width: 100%;
-max-width: 430px;
-background: var(--bg);
-overflow-x: hidden;
-overflow-y: auto;
-position: relative;
-min-height: 100vh;
-min-height: 100dvh;
-box-shadow: 0 0 30px rgba(0,0,0,0.15);
-padding-bottom: 80px;
--webkit-overflow-scrolling: touch;
-transform: translateZ(0);
-backface-visibility: hidden;
-}
+    body {
+    font-family: var(--font);
+    background: #e8e8e8;
+    color: var(--text-main);
+    line-height: 1.4;
+    display: flex;
+    justify-content: center;
+    }
+    .app-container {
+    width: 100%;
+    max-width: 430px;
+    background: var(--bg);
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100dvh;
+    box-shadow: 0 0 30px rgba(0,0,0,0.15);
+    padding-bottom: 80px;
+    }
     img { max-width: 100%; display: block; }
     button { border: none; background: none; cursor: pointer; font-family: inherit; }
     input, select, textarea { font-family: inherit; outline: none; border: none; }
@@ -161,58 +145,57 @@ backface-visibility: hidden;
     align-items: center;
     justify-content: center;
     }
- /* ==================== SLIDER ==================== */
-.slider-container {
-  position: relative;
-  width: 100%;
-  /* FIX: Dùng aspect-ratio 3/4 chuẩn thời trang, thay cho vh bị lỗi trên Zalo */
-  aspect-ratio: 3/4; 
-  max-height: 550px;
-  background: #fff;
-  overflow: hidden;
+    /* ==================== SLIDER ==================== */
+     .slider-container {
+    position: relative;
+    width: 100%;
+    height: 60vh; /* Tự động theo 60% chiều cao màn hình mobile */
+    max-height: 450px;
+    min-height: 320px;
+    background: var(--bg-secondary);
+    overflow: hidden;
 }
-.slider {
-  display: flex;
-  height: 100%;
-  scroll-snap-type: x mandatory;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+    .slider {
+    display: flex;
+    height: 100%;
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    }
+    .slider::-webkit-scrollbar {
+    display: none;
+    }
+    .slide {
+    min-width: 100%;
+    height: 100%;
+    scroll-snap-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    }
+    .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Hiển thị trọn vẹn ảnh, không cắt */
+    background: #f8f8f8; /* Lấp đầy khoảng trống nếu ảnh không full khung */
 }
-.slider::-webkit-scrollbar { display: none; }
-.slide {
-  min-width: 100%;
-  height: 100%;
-  scroll-snap-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* FIX: Lấp đầy khung, ko để khoảng trắng */
-  display: block;
-}
-.slider-indicator {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: rgba(0,0,0,0.6);
-  color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  pointer-events: none;
-  z-index: 5;
-  backdrop-filter: blur(4px);
-}
-
-/* XTRA BADGES CHUẨN SHOPEE */
+    .slider-indicator {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 5;
+    }
+   /* XTRA BADGES CHUẨN SHOPEE */
 .xtra-badges {
   position: absolute;
   bottom: 0;
@@ -2287,21 +2270,22 @@ backface-visibility: hidden;
     }
      /* ===== CHATBOT STYLES ===== */
 .chatbot-fab {
-  position: fixed; bottom: 80px; right: 15px; width: 50px; height: 50px;
+  position: fixed; bottom: 90px; right: 16px; width: 54px; height: 54px;
   background: var(--primary); color: white; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
-  cursor: pointer; z-index: 99999; transition: transform 0.2s; border: none;
+  font-size: 26px; box-shadow: var(--shadow-lg); cursor: pointer; z-index: 800;
+  transition: transform 0.2s; border: none;
 }
 .chatbot-fab:hover { transform: scale(1.08); }
 .chatbot-fab.hide { transform: scale(0); opacity: 0; pointer-events: none; }
+
 .chatbot-window {
-  position: fixed; bottom: 140px; right: 15px; width: 320px; max-width: 90vw;
-  height: 450px; max-height: 70vh; background: white; border-radius: 16px;
-  box-shadow: 0 5px 25px rgba(0,0,0,0.2); z-index: 99999; display: none;
+  position: fixed; bottom: 100px; right: 16px; width: 340px; max-width: calc(100vw - 32px);
+  height: 480px; max-height: 75vh; background: white; border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 800; display: none;
   flex-direction: column; overflow: hidden;
 }
-.chatbot-window.show { display: flex; animation: chatSlideUp 0.3s ease; }
+.chatbot-window.show { display: flex; animation: chatSlideUp 0.25s ease; }
 @keyframes chatSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 .chatbot-header {
@@ -2341,54 +2325,6 @@ backface-visibility: hidden;
 .chatbot-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .chatbot-chip { background: var(--bg-secondary); border: 1px solid var(--border); padding: 6px 10px; border-radius: 16px; font-size: 12px; cursor: pointer; color: var(--text-secondary); transition: 0.2s; }
 .chatbot-chip:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }   
-        /* ===== FIX IN-APP BROWSER ===== */
-@media screen and (max-width: 430px) {
-  .slider-container {
-    height: 56vw !important;
-    max-height: 400px !important;
-  }
-  
-  .app-container {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-  
-  .chatbot-fab {
-    bottom: 75px !important;
-    right: 12px !important;
-  }
-  
-  .chatbot-window {
-    bottom: 140px !important;
-    right: 12px !important;
-    width: 300px !important;
-  }
-  
-  .tabs {
-    top: 48px !important;
-    z-index: 90 !important;
-  }
-  
-  .bottom-bar {
-    padding-bottom: max(8px, env(safe-area-inset-bottom, 8px)) !important;
-    z-index: 100 !important;
-  }
-}
-
-.slider {
-  transform: translateZ(0);
-  will-change: transform;
-  -webkit-overflow-scrolling: touch;
-}
-
-.gallery-overlay {
-  background: rgba(0,0,0,0.95) !important;
-}
-
-.gallery-content img {
-  max-width: 95% !important;
-  max-height: 85vh !important;
-}
     </style>
     </head>
     <body>
@@ -3718,9 +3654,6 @@ onclick="toggleDemoVideo(this)"
     ],
     fakeNames: ['Nguyễn A.', 'Trần B.', 'Lê C.', 'Phạm D.', 'Hoàng E.', 'Vũ F.', 'Đặng G.', 'Bùi H.', 'Lý I.', 'Đỗ K.', 'Mai L.', 'Hồng M.']
     };
-        // Biến theo dõi tương tác người dùng để unmute video
-let userInteracted = false;
-let videoUnmuted = false;
     // ==================== STATE ====================
     let state = {
     cart: [],
@@ -3734,19 +3667,23 @@ let videoUnmuted = false;
     orderPlacedAt: null
     };
     // ==================== INIT ====================
-   document.addEventListener('DOMContentLoaded', () => {
-// Đánh dấu user interaction trên mọi sự kiện
-const markInteraction = () => {
-if (!userInteracted) {
-userInteracted = true;
-console.log('User interacted - video can now unmute');
-}
-};
+    document.addEventListener('DOMContentLoaded', () => {
+    // Biến đánh dấu người dùng đã tương tác với trang (cho phép auto-play có tiếng)
 
-// Listen cho nhiều sự kiện khác nhau
-document.addEventListener('click', markInteraction, { capture: true });
-document.addEventListener('touchstart', markInteraction, { capture: true, passive: true });
-document.addEventListener('scroll', markInteraction, { capture: true, passive: true });
+    document.body.addEventListener('click', () => {
+        if (!userInteracted) {
+            userInteracted = true;
+            console.log('User interacted - video can now play with sound');
+            // Thử unmute video nếu đang hiển thị
+            const v = document.getElementById('productVideo');
+            if (v && !v.muted) return;
+            if (v) {
+                v.muted = false;
+                const btn = document.getElementById('unmuteBtn');
+                if (btn) btn.innerHTML = '🔊 Tắt tiếng';
+            }
+        }
+    }, { once: false });
     renderSlider();
     renderVouchers();
     renderReviews();
@@ -3761,63 +3698,31 @@ document.addEventListener('scroll', markInteraction, { capture: true, passive: t
 const videoEl = document.getElementById('productVideo');
 const unmuteBtn = document.getElementById('unmuteBtn');
 
-// Hàm thử unmute video
-async function tryUnmuteVideo() {
-if (!videoEl || videoUnmuted) return;
-try {
-videoEl.muted = false;
-await videoEl.play();
-videoUnmuted = true;
-if (unmuteBtn) {
-unmuteBtn.innerHTML = '🔊 Tắt tiếng';
-unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
-}
-console.log('Video unmuted successfully');
-} catch (e) {
-console.log('Auto unmute prevented:', e);
-// Nếu không unmute được, giữ muted
-videoEl.muted = true;
-}
-}
-
 if (videoEl) {
-// Auto play muted ban đầu
-videoEl.muted = true;
-videoEl.play().catch(() => {});
-
-const videoObserver = new IntersectionObserver((entries) => {
-entries.forEach(entry => {
-if (entry.isIntersecting) {
-videoEl.play().catch(() => {});
-// Nếu user đã tương tác, thử unmute
-if (userInteracted && !videoUnmuted) {
-setTimeout(tryUnmuteVideo, 500);
-}
-} else {
-videoEl.pause();
-}
-});
-}, { threshold: 0.5 });
-
-videoObserver.observe(videoEl);
+  videoEl.play().catch(() => {});
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) videoEl.play().catch(() => {});
+      else videoEl.pause();
+    });
+  }, { threshold: 0.4 });
+  videoObserver.observe(videoEl);
 }
 
 if (unmuteBtn && videoEl) {
-unmuteBtn.onclick = (e) => {
-e.stopPropagation();
-userInteracted = true;
-if (videoEl.muted) {
-videoEl.muted = false;
-videoUnmuted = true;
-unmuteBtn.innerHTML = '🔊 Tắt tiếng';
-unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
-} else {
-videoEl.muted = true;
-videoUnmuted = false;
-unmuteBtn.innerHTML = '🔇 Bật tiếng';
-unmuteBtn.style.background = 'rgba(0,0,0,0.7)';
-}
-};
+  unmuteBtn.onclick = (e) => {
+    e.stopPropagation();
+    userInteracted = true;
+    if (videoEl.muted) {
+      videoEl.muted = false;
+      unmuteBtn.innerHTML = '🔊 Tắt tiếng';
+      unmuteBtn.style.background = 'rgba(254,44,85,0.9)';
+    } else {
+      videoEl.muted = true;
+      unmuteBtn.innerHTML = '🔇 Bật tiếng';
+      unmuteBtn.style.background = 'rgba(0,0,0,0.7)';
+    }
+  };
 }
 document.addEventListener('click', () => { if (!userInteracted) userInteracted = true; }, { once: true });
 
@@ -3965,113 +3870,102 @@ window.toggleDemoVideo = function(videoEl) {
             }
         }, 15000);
     }
-  // ==================== SLIDER & GALLERY LOGIC ====================
-
-// Hàm mở Gallery toàn màn hình (Đã sửa lỗi đen xì và đếm sai)
-window.openGallery = function() {
-  const gallery = document.getElementById('fullScreenGallery');
-  const galleryImg = document.getElementById('galleryMainImage');
-  const galleryCounter = document.getElementById('galleryCounter');
-  const slider = document.getElementById('slider');
-  
-  // Tính toán vị trí slide chính xác
-  const slideWidth = slider.clientWidth || window.innerWidth;
-  const currentIndex = Math.round(slider.scrollLeft / slideWidth);
-  
-  // Lấy ảnh an toàn
-  const slides = document.querySelectorAll('.slide');
-  const totalSlides = slides.length;
-  
-  if(slides[currentIndex]) {
-    const imgElement = slides[currentIndex].querySelector('img');
-    if(imgElement && imgElement.src) {
-      galleryImg.src = imgElement.src;
-      galleryImg.style.display = 'block';
-    } else {
-      galleryImg.src = 'https://placehold.co/400x500/333/fff?text=No+Image'; // Ảnh dự phòng
+    // ==================== SLIDER & GALLERY LOGIC ====================
+    // Hàm mở Gallery toàn màn hình
+    window.openGallery = function() {
+        const gallery = document.getElementById('fullScreenGallery');
+        const galleryImg = document.getElementById('galleryMainImage');
+        const galleryCounter = document.getElementById('galleryCounter');
+        const slider = document.getElementById('slider');
+        
+        // Lấy vị trí slide hiện tại
+        const slideWidth = slider.clientWidth;
+        const currentIndex = Math.round(slider.scrollLeft / slideWidth);
+        
+        // Lấy nguồn ảnh từ slide tương ứng
+        const slides = document.querySelectorAll('.slide');
+        if(slides[currentIndex]) {
+            const imgSrc = slides[currentIndex].querySelector('img').src;
+            galleryImg.src = imgSrc;
+        }
+        
+        // Cập nhật số đếm
+        galleryCounter.textContent = `${currentIndex + 1}/9`;
+        
+        // Hiện Gallery
+        gallery.style.display = 'flex';
+    };
+    window.switchGalleryTab = function(type) {
+        const img = document.getElementById('galleryMainImage');
+        const sizeContent = document.getElementById('gallerySizeContent');
+        const tabs = document.querySelectorAll('.gallery-tabs .tab');
+        
+        if (type === 'size') {
+            img.style.display = 'none';
+            sizeContent.style.display = 'block';
+            tabs[0].classList.remove('active');
+            tabs[1].classList.add('active');
+        } else {
+            img.style.display = 'block';
+            sizeContent.style.display = 'none';
+            tabs[0].classList.add('active');
+            tabs[1].classList.remove('active');
+        }
     }
-  }
-  
-  // FIX: Hiển thị đúng số ảnh (ví dụ 1/9, 2/9...)
-  galleryCounter.textContent = `${currentIndex + 1}/${totalSlides}`;
-  gallery.style.display = 'flex';
-  document.body.style.overflow = 'hidden'; // Khóa cuộn khi xem ảnh
-};
+    // Hàm đóng Gallery
+    window.closeGallery = function() {
+        document.getElementById('fullScreenGallery').style.display = 'none';
+    };
 
-window.switchGalleryTab = function(type) {
-  const img = document.getElementById('galleryMainImage');
-  const sizeContent = document.getElementById('gallerySizeContent');
-  const tabs = document.querySelectorAll('.gallery-tabs .tab');
-  if (type === 'size') {
-    img.style.display = 'none';
-    sizeContent.style.display = 'block';
-    tabs[0].classList.remove('active');
-    tabs[1].classList.add('active');
-  } else {
-    img.style.display = 'block';
-    sizeContent.style.display = 'none';
-    tabs[0].classList.add('active');
-    tabs[1].classList.remove('active');
-  }
-}
-
-window.closeGallery = function() {
-  document.getElementById('fullScreenGallery').style.display = 'none';
-  document.body.style.overflow = ''; // Mở khóa cuộn
-};
-
-// Hàm render Slider (Sửa lỗi đếm số và tự động trượt mượt)
+    // Hàm render Slider (Đã sửa lỗi giật bằng scrollend)
 function renderSlider() {
-  const slider = document.getElementById('slider');
-  const indicator = document.getElementById('sliderIndicator');
-  const totalSlides = slider.querySelectorAll('.slide').length; // Lấy tổng số ảnh thực tế
-  
-  let touchStartX = 0;
-  let isSwiping = false;
-  
-  slider.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-    isSwiping = false;
-    clearInterval(autoSliderTimer);
-  }, { passive: true });
-  
-  slider.addEventListener('touchmove', (e) => {
-    if (Math.abs(e.touches[0].clientX - touchStartX) > 10) {
-      isSwiping = true;
-    }
-  }, { passive: true });
-  
-  slider.addEventListener('touchend', () => {
-    clearTimeout(_sliderScrollTimer);
-    _sliderScrollTimer = setTimeout(() => {
-      const slideWidth = slider.clientWidth;
-      const newIdx = Math.round(slider.scrollLeft / slideWidth);
-      const safeIdx = Math.min(Math.max(newIdx, 0), totalSlides - 1);
-      
-      currentSlideIdx = safeIdx;
-      // FIX: Cập nhật số đúng theo tổng số ảnh
-      indicator.textContent = `${safeIdx + 1}/${totalSlides}`;
-      startAutoSlider();
-    }, 300);
-  }, { passive: true });
-  
-  slider.addEventListener('scroll', () => {
-    clearTimeout(_sliderScrollTimer);
-    _sliderScrollTimer = setTimeout(() => {
-      const slideWidth = slider.clientWidth;
-      const newIdx = Math.round(slider.scrollLeft / slideWidth);
-      const safeIdx = Math.min(Math.max(newIdx, 0), totalSlides - 1);
-      
-      currentSlideIdx = safeIdx;
-      indicator.textContent = `${safeIdx + 1}/${totalSlides}`;
-    }, 150);
-  }, { passive: true });
-  
-  slider.addEventListener('click', (e) => {
-    if (!isSwiping) {
-      openGallery();
-    }
-  });
+    const slider = document.getElementById('slider');
+    const indicator = document.getElementById('sliderIndicator');
+
+    // Ghi nhận xem user có đang swipe không (để phân biệt tap vs swipe)
+    let touchStartX = 0;
+
+    slider.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        _sliderTouchMoved = false;
+        // Dừng auto-slide khi user chạm vào
+        clearInterval(autoSliderTimer);
+    }, { passive: true });
+
+    slider.addEventListener('touchmove', (e) => {
+        if (Math.abs(e.touches[0].clientX - touchStartX) > 8) {
+            _sliderTouchMoved = true;
+        }
+    }, { passive: true });
+
+    slider.addEventListener('touchend', () => {
+        // Dùng timeout để chờ scroll snap kết thúc rồi mới đọc vị trí
+        clearTimeout(_sliderScrollTimer);
+        _sliderScrollTimer = setTimeout(() => {
+            const newIdx = Math.round(slider.scrollLeft / slider.clientWidth);
+            if (newIdx !== currentSlideIdx || !_sliderTouchMoved) {
+                currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
+                indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+            }
+            // Khởi động lại auto-slide sau 2.5s
+            startAutoSlider();
+        }, 350);
+    }, { passive: true });
+
+    // Desktop: lắng nghe scroll
+    slider.addEventListener('scroll', () => {
+        clearTimeout(_sliderScrollTimer);
+        _sliderScrollTimer = setTimeout(() => {
+            const newIdx = Math.round(slider.scrollLeft / slider.clientWidth);
+            currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
+            indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+        }, 150);
+    }, { passive: true });
+
+    // Click vào ảnh → mở gallery (chỉ khi không swipe)
+    slider.addEventListener('click', () => {
+        if (!_sliderTouchMoved) openGallery();
+    });
 }
 // ==================== AUTO SLIDER ====================
 let autoSliderTimer = null;
@@ -4210,39 +4104,29 @@ function startAutoSlider() {
     renderReviews();
     }
     // ==================== TABS ====================
-function setupTabs() {
-  document.querySelectorAll('.tab').forEach(tab => {
+    function setupTabs() {
+    document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      const target = document.getElementById(tab.dataset.tab);
-      if (!target) return;
-      const headerHeight = document.querySelector('.header').offsetHeight || 50;
-      const tabsHeight = document.querySelector('.tabs').offsetHeight || 50;
-      const offset = headerHeight + tabsHeight + 10;
-      const top = target.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top, behavior: 'smooth' });
+    const target = document.getElementById(tab.dataset.tab);
+    if (!target) return;
+    const offset = 100;
+    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
     });
-  });
-  
-  const sections = ['overview','reviews','desc','suggest']
-    .map(id => document.getElementById(id))
-    .filter(Boolean);
-    
-  const observer = new IntersectionObserver((entries) => {
+    });
+    const sections = ['overview','reviews','desc','suggest'].map(id => document.getElementById(id)).filter(Boolean);
+    const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.id;
-        document.querySelectorAll('.tab').forEach(t => {
-          t.classList.toggle('active', t.dataset.tab === id);
-        });
-      }
+    if (entry.isIntersecting) {
+    const id = entry.target.id;
+    document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === id);
     });
-  }, { 
-    rootMargin: '-120px 0px -50% 0px',
-    threshold: 0 
-  });
-  
-  sections.forEach(s => observer.observe(s));
-}
+    }
+    });
+    }, { rootMargin: '-100px 0px -60% 0px', threshold: 0 });
+    sections.forEach(s => observer.observe(s));
+    }
     // ==================== SHOP DESC TOGGLE ====================
     function toggleShopDesc() {
     const desc1 = document.getElementById('shopDescFull');
@@ -4807,35 +4691,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
-    /* ===== CHATBOT LOGIC ===== */
+        /* ===== CHATBOT LOGIC ===== */
 const CHATBOT_DATA = {
-shop: "MH Home",
-phone: "0393190236",
-address: "28 Tổ 3, Khu Chiến Thắng, Xuân Mai, Hà Nội",
-hours: "8:00 - 17:00 (Thứ 2 - Thứ 7)",
-shipping: "🚚 Dạ, shop MIỄN PHÍ VẬN CHUYỂN toàn quốc ạ! Đơn hàng sẽ được giao trong 24h. Tất cả đơn hàng đều được áp dụng Freeship ạ.",
-payment: "💳 Shop hỗ trợ các phương thức thanh toán: COD (kiểm tra hàng trước khi thanh toán), ZaloPay, MoMo và PayLater trả góp 0% ạ.",
-return_policy: "🔄 Dạ, shop có chính sách ĐỔI TRẢ MIỄN PHÍ trong 15 ngày nếu sản phẩm lỗi, không đúng mô tả hoặc không vừa ý. Sản phẩm cần còn nguyên nhãn mác ạ.",
-product: "👕 Áo thun Clean Fit nhà mình có form tôn vai, chất liệu Cotton Zip cao cấp co giãn 4 chiều, vải mềm mịn, thoáng mát và không xù lông ạ.",
-price: "💰 Dạ, giá hiện tại từ 99.323đ (đã giảm 55% so với giá gốc 179.000đ). Quý khách có thể áp dụng thêm Voucher trong mục khuyến mãi để được giảm giá thêm ạ.",
-size_guide: "📏 Dạ, để được tư vấn size chính xác nhất, quý khách vui lòng cho shop biết Chiều cao và Cân nặng ạ. Hoặc quý khách có thể tham khảo bảng size chi tiết trong phần 'Mô tả sản phẩm' (có đầy đủ size M đến 3XL) ạ.",
-voucher: "🎫 Dạ, quý khách đã được nhận Freeship 50K/70K/98K khi vào web ạ. Quý khách vui lòng nhấn vào mục 'Voucher & khuyến mãi' để lấy mã giảm giá thêm ạ.",
-contact: "📞 Dạ, Hotline của shop: 0393190236. Giờ làm việc: 8h-17h (Thứ 2 - Thứ 7). Quý khách vui lòng nhắn tin hoặc gọi trực tiếp để được tư vấn nhanh nhất ạ!",
-greeting: "Dạ, chào quý khách! 👋 Em là trợ lý ảo của <strong>MH Home</strong>. Em có thể hỗ trợ quý khách về thông tin sản phẩm, size, giá, vận chuyển và khuyến mãi ạ. Quý khách cần em giúp gì ạ?"
+  shop: "MH Home",
+  phone: "0393190236",
+  address: "28 Tổ 3, Khu Chiến Thắng, Xuân Mai, Hà Nội",
+  hours: "8:00 - 17:00 (Thứ 2 - Thứ 7)",
+  shipping: "🚚 Miễn phí vận chuyển toàn quốc! Giao nhanh 24h. Đơn nào cũng được Freeship nhé.",
+  payment: "💳 Hỗ trợ COD (kiểm tra hàng trước khi thanh toán), ZaloPay, MoMo, PayLater trả góp 0%.",
+  return_policy: "🔄 Đổi trả miễn phí trong 15 ngày nếu sản phẩm lỗi, không đúng mô tả hoặc không vừa ý. Hàng còn nguyên nhãn mác.",
+  product: "👕 Áo thun Clean Fit form tôn vai, chất liệu Cotton Zip co giãn 4 chiều, mềm mịn, thoáng mát, không xù lông.",
+  price: "💰 Giá hiện tại từ 99.323đ (đã giảm 55% so với giá gốc 179.000đ). Bạn có thể áp dụng thêm Voucher trong mục khuyến mãi!",
+  size_guide: "📏 Bạn cho mình biết Chiều cao & Cân nặng nhé. Hoặc tham khảo bảng size trong phần 'Mô tả sản phẩm' (Size M đến 3XL).",
+  voucher: "🎫 Bạn nhận được Freeship 50K/70K/98K ngay khi vào web. Nhấn vào mục 'Voucher & khuyến mãi' để lấy mã giảm thêm!",
+  contact: "📞 Hotline shop: 0393190236. Giờ làm việc: 8h-17h (T2-T7). Nhắn tin hoặc gọi trực tiếp để được tư vấn nhanh nhất nhé!"
 };
+
 // Cấu hình từ khóa & câu trả lời (dễ dàng thêm/sửa)
 const KB = [
-{ keys: "giá|bao nhiêu|rẻ|sale|khuyến mãi|về giá|giá tiền", ans: CHATBOT_DATA.price },
-{ keys: "size|hướng dẫn|mặc size|tư vấn size|cao|cân nặng|chọn size", ans: CHATBOT_DATA.size_guide },
-{ keys: "ship|giao hàng|vận chuyển|phí ship|freecode|freeship|ship bao tiền|phí vận chuyển", ans: CHATBOT_DATA.shipping },
-{ keys: "thanh toán|trả tiền|cod|momo|zalopay|paylater|chuyển khoản|trả góp", ans: CHATBOT_DATA.payment },
-{ keys: "đổi trả|hoàn tiền|trả lại|bảo hành|lỗi|không vừa|đổi size", ans: CHATBOT_DATA.return_policy },
-{ keys: "chất liệu|vải|cotton|thoáng|xù lông|dày|mỏng|form", ans: CHATBOT_DATA.product },
-{ keys: "voucher|mã giảm|coupon|giảm giá|khuyến mãi|ưu đãi", ans: CHATBOT_DATA.voucher },
-{ keys: "địa chỉ|ở đâu|cửa hàng|shop ở|tìm shop|cửa hàng ở đâu", ans: `📍 ${CHATBOT_DATA.address}` },
-{ keys: "số điện thoại|hotline|gọi|liên hệ|alo|sđt", ans: CHATBOT_DATA.contact },
-{ keys: "giờ làm|mở cửa|đóng cửa|làm việc mấy giờ|giờ làm việc", ans: `⏰ ${CHATBOT_DATA.hours}` },
-{ keys: "xin chào|hi|hello|alo|chào shop|shop ơi|chào bạn|ad ơi", ans: CHATBOT_DATA.greeting }
+  { keys: "giá|bao nhiêu|rẻ|sale|khuyến mãi|về giá", ans: CHATBOT_DATA.price },
+  { keys: "size|hướng dẫn|mặc size|tư vấn size|cao|cân nặng", ans: CHATBOT_DATA.size_guide },
+  { keys: "ship|giao hàng|vận chuyển|phí ship|freecode|freeship|ship bao tiền", ans: CHATBOT_DATA.shipping },
+  { keys: "thanh toán|trả tiền|cod|momo|zalopay|paylater|chuyển khoản", ans: CHATBOT_DATA.payment },
+  { keys: "đổi trả|hoàn tiền|trả lại|bảo hành|lỗi|không vừa", ans: CHATBOT_DATA.return_policy },
+  { keys: "chất liệu|vải|cotton|thoáng|xù lông|dày|mỏng", ans: CHATBOT_DATA.product },
+  { keys: "voucher|mã giảm|coupon|giảm giá|khuyến mãi", ans: CHATBOT_DATA.voucher },
+  { keys: "địa chỉ|ở đâu|cửa hàng|shop ở|tìm shop", ans: `📍 ${CHATBOT_DATA.address}` },
+  { keys: "số điện thoại|hotline|gọi|liên hệ|alo", ans: CHATBOT_DATA.contact },
+  { keys: "giờ làm|mở cửa|đóng cửa|làm việc mấy giờ", ans: `⏰ ${CHATBOT_DATA.hours}` },
+  { keys: "xin chào|hi|hello|alo|chào shop|shop ơi", ans: `Chào bạn! 👋 Mình có thể hỗ trợ gì cho bạn hôm nay? (Gợi ý: hỏi về *giá, size, ship, voucher, đổi trả, địa chỉ*)` }
 ];
 
 // Hàm chuẩn hóa tiếng Việt (bỏ dấu) để so khớp thông minh
@@ -4844,32 +4728,22 @@ function removeDiacritics(str) {
 }
 
 function findReply(input) {
-const cleanInput = removeDiacritics(input);
-for (const item of KB) {
-const keywords = item.keys.split('|').map(k => k.trim());
-if (keywords.some(k => cleanInput.includes(removeDiacritics(k)))) {
-return item.ans;
+  const cleanInput = removeDiacritics(input);
+  for (const item of KB) {
+    const keywords = item.keys.split('|').map(k => k.trim());
+    if (keywords.some(k => cleanInput.includes(removeDiacritics(k)))) {
+      return item.ans;
+    }
+  }
+  return `Xin lỗi, mình chưa hiểu rõ câu hỏi. 😅\nBạn thử hỏi về: *size, giá, ship, voucher, thanh toán, đổi trả, địa chỉ* hoặc gọi hotline 0393190236 để được hỗ trợ trực tiếp nhé!`;
 }
-}
-return `Dạ, em xin lỗi vì chưa hiểu rõ câu hỏi của quý khách. 😅
-Quý khách vui lòng hỏi về: *size, giá, ship, voucher, thanh toán, đổi trả, địa chỉ* hoặc gọi hotline 0393190236 để được hỗ trợ trực tiếp ạ!`;
-}
+
 function toggleChatbot() {
   const w = document.getElementById('chatWindow');
   const f = document.getElementById('chatFab');
-  
-  if (w.classList.contains('show')) {
-    w.classList.remove('show');
-    f.classList.remove('hide');
-  } else {
-    w.classList.add('show');
-    f.classList.add('hide');
-    // Tự động focus vào ô nhập liệu khi mở
-    setTimeout(() => {
-        const input = document.getElementById('chatInput');
-        if(input) input.focus();
-    }, 300);
-  }
+  w.classList.toggle('show');
+  f.classList.toggle('hide');
+  if(w.classList.contains('show')) document.getElementById('chatInput').focus();
 }
 
 function askSuggestion(text) {
@@ -4926,8 +4800,8 @@ function scrollChat() {
     <button class="chatbot-close" onclick="toggleChatbot()">✕</button>
   </div>
   <div class="chatbot-messages" id="chatMessages">
-  <div class="chatbot-msg bot">
-<div id="chatbotGreeting">Dạ, chào quý khách! 👋 Em là trợ lý ảo của <strong>MH Home</strong>. Em có thể hỗ trợ quý khách về thông tin sản phẩm, size, giá, vận chuyển và khuyến mãi ạ. Quý khách cần em giúp gì ạ?</div>
+    <div class="chatbot-msg bot">
+      Chào bạn! 👋 Mình là trợ lý ảo của <strong>MH Home</strong>. Bạn cần hỗ trợ gì về size, giá, ship hay voucher?
       <div class="chatbot-chips">
         <span class="chatbot-chip" onclick="askSuggestion('giá bao nhiêu?')">💰 Giá & Sale</span>
         <span class="chatbot-chip" onclick="askSuggestion('tư vấn size')">📏 Chọn size</span>
