@@ -3636,6 +3636,7 @@ onclick="toggleDemoVideo(this)"
     setupTabs();
     startAutoSlider();
     startFakeNotifications();
+        loadCreatorVideoThumbnails();
 // --- VIDEO PLAY/PAUSE & UNMUTE CHUẨN MOBILE ---
 const videoEl = document.getElementById('productVideo');
 const unmuteBtn = document.getElementById('unmuteBtn');
@@ -3863,66 +3864,63 @@ window.toggleDemoVideo = function(videoEl) {
 function renderSlider() {
     const slider = document.getElementById('slider');
     const indicator = document.getElementById('sliderIndicator');
-    const galleryCounter = document.getElementById('galleryCounter');
-    const galleryImg = document.getElementById('galleryMainImage');
 
-    let scrollDebounce = null;
+    // Ghi nhận xem user có đang swipe không (để phân biệt tap vs swipe)
     let touchStartX = 0;
-    let isSwiping = false;
 
-    // === TOUCH: pause auto-slide khi user chạm ===
     slider.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
-        isSwiping = false;
-        clearInterval(autoSliderTimer); // tạm dừng khi chạm
+        _sliderTouchMoved = false;
+        // Dừng auto-slide khi user chạm vào
+        clearInterval(autoSliderTimer);
     }, { passive: true });
 
     slider.addEventListener('touchmove', (e) => {
-        if (Math.abs(e.touches[0].clientX - touchStartX) > 8) isSwiping = true;
+        if (Math.abs(e.touches[0].clientX - touchStartX) > 8) {
+            _sliderTouchMoved = true;
+        }
     }, { passive: true });
 
-    // === TOUCH END: cập nhật số đúng + restart timer 2.5s ===
     slider.addEventListener('touchend', () => {
-        clearTimeout(scrollDebounce);
-        scrollDebounce = setTimeout(() => {
-            currentSlideIdx = Math.round(slider.scrollLeft / slider.clientWidth);
-            const countText = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
-            indicator.textContent = countText;
-
-            if (document.getElementById('fullScreenGallery').style.display === 'flex') {
-                galleryCounter.textContent = countText;
-                const slides = document.querySelectorAll('.slide');
-                if (slides[currentSlideIdx]) {
-                    galleryImg.src = slides[currentSlideIdx].querySelector('img').src;
-                }
+        // Dùng timeout để chờ scroll snap kết thúc rồi mới đọc vị trí
+        clearTimeout(_sliderScrollTimer);
+        _sliderScrollTimer = setTimeout(() => {
+            const newIdx = Math.round(slider.scrollLeft / slider.clientWidth);
+            if (newIdx !== currentSlideIdx || !_sliderTouchMoved) {
+                currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
+                indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
             }
-            // Restart auto-slide sau 2.5s kể từ lúc user thả tay
+            // Khởi động lại auto-slide sau 2.5s
             startAutoSlider();
-        }, 150);
-    });
-
-    // === SCROLL (desktop mouse drag) ===
-    slider.addEventListener('scroll', () => {
-        clearTimeout(scrollDebounce);
-        scrollDebounce = setTimeout(() => {
-            currentSlideIdx = Math.round(slider.scrollLeft / slider.clientWidth);
-            indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
-        }, 100);
+        }, 350);
     }, { passive: true });
 
-    // === CLICK mở gallery (chỉ khi không swipe) ===
+    // Desktop: lắng nghe scroll
+    slider.addEventListener('scroll', () => {
+        clearTimeout(_sliderScrollTimer);
+        _sliderScrollTimer = setTimeout(() => {
+            const newIdx = Math.round(slider.scrollLeft / slider.clientWidth);
+            currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
+            indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+        }, 150);
+    }, { passive: true });
+
+    // Click vào ảnh → mở gallery (chỉ khi không swipe)
     slider.addEventListener('click', () => {
-        if (!isSwiping) openGallery();
+        if (!_sliderTouchMoved) openGallery();
     });
 }
 // ==================== AUTO SLIDER ====================
 let autoSliderTimer = null;
 let currentSlideIdx = 0;
 const SLIDE_TOTAL = 9;
+let _sliderScrollTimer = null;
+let _sliderTouchMoved = false;
 
 function startAutoSlider() {
     clearInterval(autoSliderTimer);
     autoSliderTimer = setInterval(() => {
+        // Không auto-slide khi đang mở modal
         if (document.querySelectorAll('.modal-overlay.active').length > 0) return;
         const slider = document.getElementById('slider');
         currentSlideIdx = (currentSlideIdx + 1) % SLIDE_TOTAL;
@@ -4553,6 +4551,28 @@ video.muted = true;
 btn.innerHTML = '🔇 Bật tiếng';
 btn.style.background = 'rgba(0,0,0,0.7)';
 }
+}// ==================== VIDEO THUMBNAIL FIX (MOBILE) ====================
+function loadCreatorVideoThumbnails() {
+    document.querySelectorAll('.creator-video').forEach(video => {
+        const forceFirstFrame = function() {
+            // Seek đến 0.001s → ép mobile render frame đầu tiên
+            try { video.currentTime = 0.001; } catch(e) {}
+            video.removeEventListener('loadedmetadata', forceFirstFrame);
+            video.removeEventListener('loadeddata', forceFirstFrame);
+        };
+
+        if (video.readyState >= 1) {
+            // Metadata đã load rồi → seek ngay
+            forceFirstFrame();
+        } else {
+            // Chưa load → đợi event
+            video.addEventListener('loadedmetadata', forceFirstFrame, { once: true });
+            video.addEventListener('loadeddata', forceFirstFrame, { once: true });
+        }
+
+        // Đảm bảo video bắt đầu load
+        video.load();
+    });
 }
         // ==================== TOGGLE PRODUCT TITLE ====================
     function toggleProductTitle() {
