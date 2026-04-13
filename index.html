@@ -2268,6 +2268,63 @@ video {
     cursor: pointer;
     z-index: 2;
     }
+     /* ===== CHATBOT STYLES ===== */
+.chatbot-fab {
+  position: fixed; bottom: 90px; right: 16px; width: 54px; height: 54px;
+  background: var(--primary); color: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; box-shadow: var(--shadow-lg); cursor: pointer; z-index: 800;
+  transition: transform 0.2s; border: none;
+}
+.chatbot-fab:hover { transform: scale(1.08); }
+.chatbot-fab.hide { transform: scale(0); opacity: 0; pointer-events: none; }
+
+.chatbot-window {
+  position: fixed; bottom: 100px; right: 16px; width: 340px; max-width: calc(100vw - 32px);
+  height: 480px; max-height: 75vh; background: white; border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 800; display: none;
+  flex-direction: column; overflow: hidden;
+}
+.chatbot-window.show { display: flex; animation: chatSlideUp 0.25s ease; }
+@keyframes chatSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.chatbot-header {
+  background: linear-gradient(135deg, #fe2c55, #ff6b81); color: white;
+  padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;
+  font-weight: 700; font-size: 15px;
+}
+.chatbot-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+
+.chatbot-messages {
+  flex: 1; padding: 12px; overflow-y: auto; background: #f9fafb;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.chatbot-msg { max-width: 82%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45; word-break: break-word; }
+.chatbot-msg.bot { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.chatbot-msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+.chatbot-typing { align-self: flex-start; display: flex; gap: 4px; padding: 12px 16px; background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.chatbot-typing span { width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: bounce 1.2s infinite ease-in-out; }
+.chatbot-typing span:nth-child(2) { animation-delay: 0.2s; }
+.chatbot-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-5px); } }
+
+.chatbot-input-wrap {
+  padding: 10px; border-top: 1px solid var(--border-light); display: flex; gap: 8px; background: white;
+}
+.chatbot-input {
+  flex: 1; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 20px; font-size: 14px; outline: none;
+}
+.chatbot-input:focus { border-color: var(--primary); }
+.chatbot-send {
+  background: var(--primary); color: white; border: none; padding: 0 16px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 14px;
+}
+.chatbot-send:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Gợi ý nhanh */
+.chatbot-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chatbot-chip { background: var(--bg-secondary); border: 1px solid var(--border); padding: 6px 10px; border-radius: 16px; font-size: 12px; cursor: pointer; color: var(--text-secondary); transition: 0.2s; }
+.chatbot-chip:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }   
     </style>
     </head>
     <body>
@@ -4634,6 +4691,129 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+        /* ===== CHATBOT LOGIC ===== */
+const CHATBOT_DATA = {
+  shop: "MH Home",
+  phone: "0393190236",
+  address: "28 Tổ 3, Khu Chiến Thắng, Xuân Mai, Hà Nội",
+  hours: "8:00 - 17:00 (Thứ 2 - Thứ 7)",
+  shipping: "🚚 Miễn phí vận chuyển toàn quốc! Giao nhanh 24h. Đơn nào cũng được Freeship nhé.",
+  payment: "💳 Hỗ trợ COD (kiểm tra hàng trước khi thanh toán), ZaloPay, MoMo, PayLater trả góp 0%.",
+  return_policy: "🔄 Đổi trả miễn phí trong 15 ngày nếu sản phẩm lỗi, không đúng mô tả hoặc không vừa ý. Hàng còn nguyên nhãn mác.",
+  product: "👕 Áo thun Clean Fit form tôn vai, chất liệu Cotton Zip co giãn 4 chiều, mềm mịn, thoáng mát, không xù lông.",
+  price: "💰 Giá hiện tại từ 99.323đ (đã giảm 55% so với giá gốc 179.000đ). Bạn có thể áp dụng thêm Voucher trong mục khuyến mãi!",
+  size_guide: "📏 Bạn cho mình biết Chiều cao & Cân nặng nhé. Hoặc tham khảo bảng size trong phần 'Mô tả sản phẩm' (Size M đến 3XL).",
+  voucher: "🎫 Bạn nhận được Freeship 50K/70K/98K ngay khi vào web. Nhấn vào mục 'Voucher & khuyến mãi' để lấy mã giảm thêm!",
+  contact: "📞 Hotline shop: 0393190236. Giờ làm việc: 8h-17h (T2-T7). Nhắn tin hoặc gọi trực tiếp để được tư vấn nhanh nhất nhé!"
+};
+
+// Cấu hình từ khóa & câu trả lời (dễ dàng thêm/sửa)
+const KB = [
+  { keys: "giá|bao nhiêu|rẻ|sale|khuyến mãi|về giá", ans: CHATBOT_DATA.price },
+  { keys: "size|hướng dẫn|mặc size|tư vấn size|cao|cân nặng", ans: CHATBOT_DATA.size_guide },
+  { keys: "ship|giao hàng|vận chuyển|phí ship|freecode|freeship|ship bao tiền", ans: CHATBOT_DATA.shipping },
+  { keys: "thanh toán|trả tiền|cod|momo|zalopay|paylater|chuyển khoản", ans: CHATBOT_DATA.payment },
+  { keys: "đổi trả|hoàn tiền|trả lại|bảo hành|lỗi|không vừa", ans: CHATBOT_DATA.return_policy },
+  { keys: "chất liệu|vải|cotton|thoáng|xù lông|dày|mỏng", ans: CHATBOT_DATA.product },
+  { keys: "voucher|mã giảm|coupon|giảm giá|khuyến mãi", ans: CHATBOT_DATA.voucher },
+  { keys: "địa chỉ|ở đâu|cửa hàng|shop ở|tìm shop", ans: `📍 ${CHATBOT_DATA.address}` },
+  { keys: "số điện thoại|hotline|gọi|liên hệ|alo", ans: CHATBOT_DATA.contact },
+  { keys: "giờ làm|mở cửa|đóng cửa|làm việc mấy giờ", ans: `⏰ ${CHATBOT_DATA.hours}` },
+  { keys: "xin chào|hi|hello|alo|chào shop|shop ơi", ans: `Chào bạn! 👋 Mình có thể hỗ trợ gì cho bạn hôm nay? (Gợi ý: hỏi về *giá, size, ship, voucher, đổi trả, địa chỉ*)` }
+];
+
+// Hàm chuẩn hóa tiếng Việt (bỏ dấu) để so khớp thông minh
+function removeDiacritics(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
+}
+
+function findReply(input) {
+  const cleanInput = removeDiacritics(input);
+  for (const item of KB) {
+    const keywords = item.keys.split('|').map(k => k.trim());
+    if (keywords.some(k => cleanInput.includes(removeDiacritics(k)))) {
+      return item.ans;
+    }
+  }
+  return `Xin lỗi, mình chưa hiểu rõ câu hỏi. 😅\nBạn thử hỏi về: *size, giá, ship, voucher, thanh toán, đổi trả, địa chỉ* hoặc gọi hotline 0393190236 để được hỗ trợ trực tiếp nhé!`;
+}
+
+function toggleChatbot() {
+  const w = document.getElementById('chatWindow');
+  const f = document.getElementById('chatFab');
+  w.classList.toggle('show');
+  f.classList.toggle('hide');
+  if(w.classList.contains('show')) document.getElementById('chatInput').focus();
+}
+
+function askSuggestion(text) {
+  document.getElementById('chatInput').value = text;
+  sendChat();
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('chatSendBtn');
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Hiển thị tin nhắn user
+  appendMsg(text, 'user');
+  input.value = '';
+  btn.disabled = true;
+
+  // Giả lập đang gõ
+  const typing = document.createElement('div');
+  typing.className = 'chatbot-typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  document.getElementById('chatMessages').appendChild(typing);
+  scrollChat();
+
+  // Trả lời sau delay ngắn
+  setTimeout(() => {
+    typing.remove();
+    appendMsg(findReply(text), 'bot');
+    btn.disabled = false;
+  }, 600 + Math.random() * 400);
+}
+
+function appendMsg(text, sender) {
+  const box = document.getElementById('chatMessages');
+  const el = document.createElement('div');
+  el.className = `chatbot-msg ${sender}`;
+  // Hỗ trợ xuống dòng cơ bản
+  el.innerHTML = text.replace(/\n/g, '<br>');
+  box.appendChild(el);
+  scrollChat();
+}
+
+function scrollChat() {
+  const box = document.getElementById('chatMessages');
+  box.scrollTop = box.scrollHeight;
+}
     </script>
+        <!-- CHATBOT UI -->
+<button class="chatbot-fab" id="chatFab" onclick="toggleChatbot()">💬</button>
+<div class="chatbot-window" id="chatWindow">
+  <div class="chatbot-header">
+    <span>💬 Hỗ trợ MH Home</span>
+    <button class="chatbot-close" onclick="toggleChatbot()">✕</button>
+  </div>
+  <div class="chatbot-messages" id="chatMessages">
+    <div class="chatbot-msg bot">
+      Chào bạn! 👋 Mình là trợ lý ảo của <strong>MH Home</strong>. Bạn cần hỗ trợ gì về size, giá, ship hay voucher?
+      <div class="chatbot-chips">
+        <span class="chatbot-chip" onclick="askSuggestion('giá bao nhiêu?')">💰 Giá & Sale</span>
+        <span class="chatbot-chip" onclick="askSuggestion('tư vấn size')">📏 Chọn size</span>
+        <span class="chatbot-chip" onclick="askSuggestion('phí ship bao nhiêu?')">🚚 Phí ship</span>
+        <span class="chatbot-chip" onclick="askSuggestion('có đổi trả không?')">🔄 Đổi trả</span>
+      </div>
+    </div>
+  </div>
+  <div class="chatbot-input-wrap">
+    <input type="text" class="chatbot-input" id="chatInput" placeholder="Nhập câu hỏi..." onkeypress="if(event.key==='Enter')sendChat()">
+    <button class="chatbot-send" id="chatSendBtn" onclick="sendChat()">Gửi</button>
+  </div>
+</div>
     </body>
     </html>
