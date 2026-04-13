@@ -162,14 +162,15 @@ backface-visibility: hidden;
     justify-content: center;
     }
     /* ==================== SLIDER ==================== */
-     .slider-container {
-    position: relative;
-    width: 100%;
-    height: 60vh; /* Tự động theo 60% chiều cao màn hình mobile */
-    max-height: 450px;
-    min-height: 320px;
-    background: var(--bg-secondary);
-    overflow: hidden;
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 56vw; /* Đổi từ 60vh sang 56vw để responsive đúng trên mọi trình duyệt */
+  max-height: 450px;
+  min-height: 280px;
+  background: var(--bg-secondary);
+  overflow: hidden;
+  touch-action: pan-y;
 }
     .slider {
     display: flex;
@@ -2286,20 +2287,41 @@ backface-visibility: hidden;
     }
      /* ===== CHATBOT STYLES ===== */
 .chatbot-fab {
-  position: fixed; bottom: 90px; right: 16px; width: 54px; height: 54px;
-  background: var(--primary); color: white; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px; box-shadow: var(--shadow-lg); cursor: pointer; z-index: 800;
-  transition: transform 0.2s; border: none;
+  position: fixed; 
+  bottom: 85px; /* Tăng lên để không bị bottom bar che */
+  right: 16px; 
+  width: 54px; 
+  height: 54px;
+  background: var(--primary); 
+  color: white; 
+  border-radius: 50%;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 26px; 
+  box-shadow: 0 4px 15px rgba(254,44,85,0.4);
+  cursor: pointer; 
+  z-index: 9999; /* Tăng z-index cực cao */
+  transition: transform 0.2s, opacity 0.2s; 
+  border: none;
 }
 .chatbot-fab:hover { transform: scale(1.08); }
 .chatbot-fab.hide { transform: scale(0); opacity: 0; pointer-events: none; }
-
 .chatbot-window {
-  position: fixed; bottom: 100px; right: 16px; width: 340px; max-width: calc(100vw - 32px);
-  height: 480px; max-height: 75vh; background: white; border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2); z-index: 800; display: none;
-  flex-direction: column; overflow: hidden;
+  position: fixed; 
+  bottom: 150px; /* Tăng để không bị bottom bar che */
+  right: 16px; 
+  width: 320px; 
+  max-width: calc(100vw - 32px);
+  height: 420px; 
+  max-height: 70vh; 
+  background: white; 
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25); 
+  z-index: 9999; /* Tăng z-index cực cao */
+  display: none;
+  flex-direction: column; 
+  overflow: hidden;
 }
 .chatbot-window.show { display: flex; animation: chatSlideUp 0.25s ease; }
 @keyframes chatSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -2341,6 +2363,54 @@ backface-visibility: hidden;
 .chatbot-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .chatbot-chip { background: var(--bg-secondary); border: 1px solid var(--border); padding: 6px 10px; border-radius: 16px; font-size: 12px; cursor: pointer; color: var(--text-secondary); transition: 0.2s; }
 .chatbot-chip:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }   
+        /* ===== FIX IN-APP BROWSER ===== */
+@media screen and (max-width: 430px) {
+  .slider-container {
+    height: 56vw !important;
+    max-height: 400px !important;
+  }
+  
+  .app-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .chatbot-fab {
+    bottom: 75px !important;
+    right: 12px !important;
+  }
+  
+  .chatbot-window {
+    bottom: 140px !important;
+    right: 12px !important;
+    width: 300px !important;
+  }
+  
+  .tabs {
+    top: 48px !important;
+    z-index: 90 !important;
+  }
+  
+  .bottom-bar {
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 8px)) !important;
+    z-index: 100 !important;
+  }
+}
+
+.slider {
+  transform: translateZ(0);
+  will-change: transform;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gallery-overlay {
+  background: rgba(0,0,0,0.95) !important;
+}
+
+.gallery-content img {
+  max-width: 95% !important;
+  max-height: 85vh !important;
+}
     </style>
     </head>
     <body>
@@ -3919,29 +3989,31 @@ window.toggleDemoVideo = function(videoEl) {
     }
     // ==================== SLIDER & GALLERY LOGIC ====================
     // Hàm mở Gallery toàn màn hình
-    window.openGallery = function() {
-        const gallery = document.getElementById('fullScreenGallery');
-        const galleryImg = document.getElementById('galleryMainImage');
-        const galleryCounter = document.getElementById('galleryCounter');
-        const slider = document.getElementById('slider');
-        
-        // Lấy vị trí slide hiện tại
-        const slideWidth = slider.clientWidth;
-        const currentIndex = Math.round(slider.scrollLeft / slideWidth);
-        
-        // Lấy nguồn ảnh từ slide tương ứng
-        const slides = document.querySelectorAll('.slide');
-        if(slides[currentIndex]) {
-            const imgSrc = slides[currentIndex].querySelector('img').src;
-            galleryImg.src = imgSrc;
-        }
-        
-        // Cập nhật số đếm
-        galleryCounter.textContent = `${currentIndex + 1}/9`;
-        
-        // Hiện Gallery
-        gallery.style.display = 'flex';
-    };
+window.openGallery = function() {
+  const gallery = document.getElementById('fullScreenGallery');
+  const galleryImg = document.getElementById('galleryMainImage');
+  const galleryCounter = document.getElementById('galleryCounter');
+  const slider = document.getElementById('slider');
+  
+  const slideWidth = slider.clientWidth || window.innerWidth;
+  const currentIndex = Math.round(slider.scrollLeft / slideWidth);
+  const validIndex = Math.min(Math.max(currentIndex, 0), SLIDE_TOTAL - 1);
+  
+  const slides = document.querySelectorAll('.slide');
+  if(slides[validIndex]) {
+    const imgSrc = slides[validIndex].querySelector('img').src;
+    if (imgSrc && imgSrc !== '') {
+      galleryImg.src = imgSrc;
+      galleryImg.style.display = 'block';
+    } else {
+      galleryImg.src = 'https://placehold.co/600x600/333/fff?text=No+Image';
+    }
+  }
+  
+  galleryCounter.textContent = `${validIndex + 1}/${SLIDE_TOTAL}`;
+  gallery.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
     window.switchGalleryTab = function(type) {
         const img = document.getElementById('galleryMainImage');
         const sizeContent = document.getElementById('gallerySizeContent');
@@ -3960,59 +4032,57 @@ window.toggleDemoVideo = function(videoEl) {
         }
     }
     // Hàm đóng Gallery
-    window.closeGallery = function() {
-        document.getElementById('fullScreenGallery').style.display = 'none';
-    };
+  window.closeGallery = function() {
+  const gallery = document.getElementById('fullScreenGallery');
+  gallery.style.display = 'none';
+  document.body.style.overflow = '';
+};
 
     // Hàm render Slider (Đã sửa lỗi giật bằng scrollend)
 function renderSlider() {
-    const slider = document.getElementById('slider');
-    const indicator = document.getElementById('sliderIndicator');
-
-    // Ghi nhận xem user có đang swipe không (để phân biệt tap vs swipe)
-    let touchStartX = 0;
-
-    slider.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        _sliderTouchMoved = false;
-        // Dừng auto-slide khi user chạm vào
-        clearInterval(autoSliderTimer);
-    }, { passive: true });
-
-    slider.addEventListener('touchmove', (e) => {
-        if (Math.abs(e.touches[0].clientX - touchStartX) > 8) {
-            _sliderTouchMoved = true;
-        }
-    }, { passive: true });
-
-    slider.addEventListener('touchend', () => {
-        // Dùng timeout để chờ scroll snap kết thúc rồi mới đọc vị trí
-        clearTimeout(_sliderScrollTimer);
-        _sliderScrollTimer = setTimeout(() => {
-            const newIdx = Math.round(slider.scrollLeft / slider.clientWidth);
-            if (newIdx !== currentSlideIdx || !_sliderTouchMoved) {
-                currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
-                indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
-            }
-            // Khởi động lại auto-slide sau 2.5s
-            startAutoSlider();
-        }, 350);
-    }, { passive: true });
-
-    // Desktop: lắng nghe scroll
-    slider.addEventListener('scroll', () => {
-        clearTimeout(_sliderScrollTimer);
-        _sliderScrollTimer = setTimeout(() => {
-            const newIdx = Math.round(slider.scrollLeft / slider.clientWidth);
-            currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
-            indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
-        }, 150);
-    }, { passive: true });
-
-    // Click vào ảnh → mở gallery (chỉ khi không swipe)
-    slider.addEventListener('click', () => {
-        if (!_sliderTouchMoved) openGallery();
-    });
+  const slider = document.getElementById('slider');
+  const indicator = document.getElementById('sliderIndicator');
+  let touchStartX = 0;
+  let isSwiping = false;
+  
+  slider.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    isSwiping = false;
+    clearInterval(autoSliderTimer);
+  }, { passive: true });
+  
+  slider.addEventListener('touchmove', (e) => {
+    if (Math.abs(e.touches[0].clientX - touchStartX) > 10) {
+      isSwiping = true;
+    }
+  }, { passive: true });
+  
+  slider.addEventListener('touchend', () => {
+    clearTimeout(_sliderScrollTimer);
+    _sliderScrollTimer = setTimeout(() => {
+      const slideWidth = slider.clientWidth;
+      const newIdx = Math.round(slider.scrollLeft / slideWidth);
+      currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
+      indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+      startAutoSlider();
+    }, 300);
+  }, { passive: true });
+  
+  slider.addEventListener('scroll', () => {
+    clearTimeout(_sliderScrollTimer);
+    _sliderScrollTimer = setTimeout(() => {
+      const slideWidth = slider.clientWidth;
+      const newIdx = Math.round(slider.scrollLeft / slideWidth);
+      currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
+      indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+    }, 150);
+  }, { passive: true });
+  
+  slider.addEventListener('click', (e) => {
+    if (!isSwiping) {
+      openGallery();
+    }
+  });
 }
 // ==================== AUTO SLIDER ====================
 let autoSliderTimer = null;
@@ -4151,29 +4221,39 @@ function startAutoSlider() {
     renderReviews();
     }
     // ==================== TABS ====================
-    function setupTabs() {
-    document.querySelectorAll('.tab').forEach(tab => {
+function setupTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-    const target = document.getElementById(tab.dataset.tab);
-    if (!target) return;
-    const offset = 100;
-    const top = target.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top, behavior: 'smooth' });
+      const target = document.getElementById(tab.dataset.tab);
+      if (!target) return;
+      const headerHeight = document.querySelector('.header').offsetHeight || 50;
+      const tabsHeight = document.querySelector('.tabs').offsetHeight || 50;
+      const offset = headerHeight + tabsHeight + 10;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
     });
-    });
-    const sections = ['overview','reviews','desc','suggest'].map(id => document.getElementById(id)).filter(Boolean);
-    const observer = new IntersectionObserver((entries) => {
+  });
+  
+  const sections = ['overview','reviews','desc','suggest']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+    
+  const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-    if (entry.isIntersecting) {
-    const id = entry.target.id;
-    document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.tab === id);
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        document.querySelectorAll('.tab').forEach(t => {
+          t.classList.toggle('active', t.dataset.tab === id);
+        });
+      }
     });
-    }
-    });
-    }, { rootMargin: '-100px 0px -60% 0px', threshold: 0 });
-    sections.forEach(s => observer.observe(s));
-    }
+  }, { 
+    rootMargin: '-120px 0px -50% 0px',
+    threshold: 0 
+  });
+  
+  sections.forEach(s => observer.observe(s));
+}
     // ==================== SHOP DESC TOGGLE ====================
     function toggleShopDesc() {
     const desc1 = document.getElementById('shopDescFull');
