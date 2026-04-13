@@ -161,58 +161,58 @@ backface-visibility: hidden;
     align-items: center;
     justify-content: center;
     }
-    /* ==================== SLIDER ==================== */
+ /* ==================== SLIDER ==================== */
 .slider-container {
   position: relative;
   width: 100%;
-  height: 56vw; /* Đổi từ 60vh sang 56vw để responsive đúng trên mọi trình duyệt */
-  max-height: 450px;
-  min-height: 280px;
-  background: var(--bg-secondary);
+  /* FIX: Dùng aspect-ratio 3/4 chuẩn thời trang, thay cho vh bị lỗi trên Zalo */
+  aspect-ratio: 3/4; 
+  max-height: 550px;
+  background: #fff;
   overflow: hidden;
-  touch-action: pan-y;
 }
-    .slider {
-    display: flex;
-    height: 100%;
-    scroll-snap-type: x mandatory;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    }
-    .slider::-webkit-scrollbar {
-    display: none;
-    }
-    .slide {
-    min-width: 100%;
-    height: 100%;
-    scroll-snap-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    }
-    .slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Hiển thị trọn vẹn ảnh, không cắt */
-    background: #f8f8f8; /* Lấp đầy khoảng trống nếu ảnh không full khung */
+.slider {
+  display: flex;
+  height: 100%;
+  scroll-snap-type: x mandatory;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-    .slider-indicator {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.55);
-    color: white;
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 12px;
-    pointer-events: none;
-    z-index: 5;
-    }
-   /* XTRA BADGES CHUẨN SHOPEE */
+.slider::-webkit-scrollbar { display: none; }
+.slide {
+  min-width: 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* FIX: Lấp đầy khung, ko để khoảng trắng */
+  display: block;
+}
+.slider-indicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 5;
+  backdrop-filter: blur(4px);
+}
+
+/* XTRA BADGES CHUẨN SHOPEE */
 .xtra-badges {
   position: absolute;
   bottom: 0;
@@ -2287,43 +2287,21 @@ backface-visibility: hidden;
     }
      /* ===== CHATBOT STYLES ===== */
 .chatbot-fab {
-  position: fixed; 
-  bottom: 85px; /* Tăng lên để không bị bottom bar che */
-  right: 16px; 
-  width: 54px; 
-  height: 54px;
-  background: var(--primary); 
-  color: white; 
-  border-radius: 50%;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  font-size: 26px; 
-  box-shadow: 0 4px 15px rgba(254,44,85,0.4);
-  cursor: pointer; 
-  z-index: 9999; /* Tăng z-index cực cao */
-  transition: transform 0.2s, opacity 0.2s; 
-  border: none;
+  position: fixed; bottom: 80px; right: 15px; width: 50px; height: 50px;
+  background: var(--primary); color: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+  cursor: pointer; z-index: 99999; transition: transform 0.2s; border: none;
 }
 .chatbot-fab:hover { transform: scale(1.08); }
 .chatbot-fab.hide { transform: scale(0); opacity: 0; pointer-events: none; }
 .chatbot-window {
-  position: fixed; 
-  bottom: 150px; /* Tăng để không bị bottom bar che */
-  right: 16px; 
-  width: 320px; 
-  max-width: calc(100vw - 32px);
-  height: 420px; 
-  max-height: 70vh; 
-  background: white; 
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25); 
-  z-index: 9999; /* Tăng z-index cực cao */
-  display: none;
-  flex-direction: column; 
-  overflow: hidden;
+  position: fixed; bottom: 140px; right: 15px; width: 320px; max-width: 90vw;
+  height: 450px; max-height: 70vh; background: white; border-radius: 16px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.2); z-index: 99999; display: none;
+  flex-direction: column; overflow: hidden;
 }
-.chatbot-window.show { display: flex; animation: chatSlideUp 0.25s ease; }
+.chatbot-window.show { display: flex; animation: chatSlideUp 0.3s ease; }
 @keyframes chatSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 .chatbot-header {
@@ -3987,61 +3965,67 @@ window.toggleDemoVideo = function(videoEl) {
             }
         }, 15000);
     }
-    // ==================== SLIDER & GALLERY LOGIC ====================
-    // Hàm mở Gallery toàn màn hình
+  // ==================== SLIDER & GALLERY LOGIC ====================
+
+// Hàm mở Gallery toàn màn hình (Đã sửa lỗi đen xì và đếm sai)
 window.openGallery = function() {
   const gallery = document.getElementById('fullScreenGallery');
   const galleryImg = document.getElementById('galleryMainImage');
   const galleryCounter = document.getElementById('galleryCounter');
   const slider = document.getElementById('slider');
   
+  // Tính toán vị trí slide chính xác
   const slideWidth = slider.clientWidth || window.innerWidth;
   const currentIndex = Math.round(slider.scrollLeft / slideWidth);
-  const validIndex = Math.min(Math.max(currentIndex, 0), SLIDE_TOTAL - 1);
   
+  // Lấy ảnh an toàn
   const slides = document.querySelectorAll('.slide');
-  if(slides[validIndex]) {
-    const imgSrc = slides[validIndex].querySelector('img').src;
-    if (imgSrc && imgSrc !== '') {
-      galleryImg.src = imgSrc;
+  const totalSlides = slides.length;
+  
+  if(slides[currentIndex]) {
+    const imgElement = slides[currentIndex].querySelector('img');
+    if(imgElement && imgElement.src) {
+      galleryImg.src = imgElement.src;
       galleryImg.style.display = 'block';
     } else {
-      galleryImg.src = 'https://placehold.co/600x600/333/fff?text=No+Image';
+      galleryImg.src = 'https://placehold.co/400x500/333/fff?text=No+Image'; // Ảnh dự phòng
     }
   }
   
-  galleryCounter.textContent = `${validIndex + 1}/${SLIDE_TOTAL}`;
+  // FIX: Hiển thị đúng số ảnh (ví dụ 1/9, 2/9...)
+  galleryCounter.textContent = `${currentIndex + 1}/${totalSlides}`;
   gallery.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-};
-    window.switchGalleryTab = function(type) {
-        const img = document.getElementById('galleryMainImage');
-        const sizeContent = document.getElementById('gallerySizeContent');
-        const tabs = document.querySelectorAll('.gallery-tabs .tab');
-        
-        if (type === 'size') {
-            img.style.display = 'none';
-            sizeContent.style.display = 'block';
-            tabs[0].classList.remove('active');
-            tabs[1].classList.add('active');
-        } else {
-            img.style.display = 'block';
-            sizeContent.style.display = 'none';
-            tabs[0].classList.add('active');
-            tabs[1].classList.remove('active');
-        }
-    }
-    // Hàm đóng Gallery
-  window.closeGallery = function() {
-  const gallery = document.getElementById('fullScreenGallery');
-  gallery.style.display = 'none';
-  document.body.style.overflow = '';
+  document.body.style.overflow = 'hidden'; // Khóa cuộn khi xem ảnh
 };
 
-    // Hàm render Slider (Đã sửa lỗi giật bằng scrollend)
+window.switchGalleryTab = function(type) {
+  const img = document.getElementById('galleryMainImage');
+  const sizeContent = document.getElementById('gallerySizeContent');
+  const tabs = document.querySelectorAll('.gallery-tabs .tab');
+  if (type === 'size') {
+    img.style.display = 'none';
+    sizeContent.style.display = 'block';
+    tabs[0].classList.remove('active');
+    tabs[1].classList.add('active');
+  } else {
+    img.style.display = 'block';
+    sizeContent.style.display = 'none';
+    tabs[0].classList.add('active');
+    tabs[1].classList.remove('active');
+  }
+}
+
+window.closeGallery = function() {
+  document.getElementById('fullScreenGallery').style.display = 'none';
+  document.body.style.overflow = ''; // Mở khóa cuộn
+};
+
+// Hàm render Slider (Sửa lỗi đếm số và tự động trượt mượt)
 function renderSlider() {
   const slider = document.getElementById('slider');
   const indicator = document.getElementById('sliderIndicator');
+  const totalSlides = slider.querySelectorAll('.slide').length; // Lấy tổng số ảnh thực tế
+  
   let touchStartX = 0;
   let isSwiping = false;
   
@@ -4062,8 +4046,11 @@ function renderSlider() {
     _sliderScrollTimer = setTimeout(() => {
       const slideWidth = slider.clientWidth;
       const newIdx = Math.round(slider.scrollLeft / slideWidth);
-      currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
-      indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+      const safeIdx = Math.min(Math.max(newIdx, 0), totalSlides - 1);
+      
+      currentSlideIdx = safeIdx;
+      // FIX: Cập nhật số đúng theo tổng số ảnh
+      indicator.textContent = `${safeIdx + 1}/${totalSlides}`;
       startAutoSlider();
     }, 300);
   }, { passive: true });
@@ -4073,8 +4060,10 @@ function renderSlider() {
     _sliderScrollTimer = setTimeout(() => {
       const slideWidth = slider.clientWidth;
       const newIdx = Math.round(slider.scrollLeft / slideWidth);
-      currentSlideIdx = Math.min(Math.max(newIdx, 0), SLIDE_TOTAL - 1);
-      indicator.textContent = `${currentSlideIdx + 1}/${SLIDE_TOTAL}`;
+      const safeIdx = Math.min(Math.max(newIdx, 0), totalSlides - 1);
+      
+      currentSlideIdx = safeIdx;
+      indicator.textContent = `${safeIdx + 1}/${totalSlides}`;
     }, 150);
   }, { passive: true });
   
@@ -4865,13 +4854,22 @@ return item.ans;
 return `Dạ, em xin lỗi vì chưa hiểu rõ câu hỏi của quý khách. 😅
 Quý khách vui lòng hỏi về: *size, giá, ship, voucher, thanh toán, đổi trả, địa chỉ* hoặc gọi hotline 0393190236 để được hỗ trợ trực tiếp ạ!`;
 }
-
 function toggleChatbot() {
   const w = document.getElementById('chatWindow');
   const f = document.getElementById('chatFab');
-  w.classList.toggle('show');
-  f.classList.toggle('hide');
-  if(w.classList.contains('show')) document.getElementById('chatInput').focus();
+  
+  if (w.classList.contains('show')) {
+    w.classList.remove('show');
+    f.classList.remove('hide');
+  } else {
+    w.classList.add('show');
+    f.classList.add('hide');
+    // Tự động focus vào ô nhập liệu khi mở
+    setTimeout(() => {
+        const input = document.getElementById('chatInput');
+        if(input) input.focus();
+    }, 300);
+  }
 }
 
 function askSuggestion(text) {
