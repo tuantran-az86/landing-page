@@ -2344,67 +2344,6 @@ backface-visibility: hidden;
     </style>
     </head>
     <body>
-        <!-- BẮT ĐẦU ĐOẠN KIỂM TRA LỖI -->
-<div id="debug-panel" style="position:fixed; bottom:0; left:0; right:0; background:#333; color:#0f0; padding:10px; font-size:12px; max-height:200px; overflow:auto; z-index:99999; font-family:monospace; display:none;">
-    <div style="color:#fff; font-weight:bold; border-bottom:1px solid #555; padding-bottom:5px; margin-bottom:5px;">🐛 DEBUG PANEL</div>
-    <div id="debug-content"></div>
-</div>
-<script>
-    // Hàm ghi log ra bảng debug
-    function log(msg, type='info') {
-        const panel = document.getElementById('debug-content');
-        if(!panel) return;
-        const color = type === 'error' ? '#ff4444' : (type === 'warn' ? '#ffaa00' : '#0f0');
-        panel.innerHTML += `<div style="color:${color}; margin-bottom:2px;">> ${msg}</div>`;
-        console.log(msg);
-    }
-
-    window.addEventListener('load', () => {
-        const panel = document.getElementById('debug-panel');
-        panel.style.display = 'block';
-        
-        log(`📱 User-Agent: ${navigator.userAgent}`);
-        log(`📐 Window Size: ${window.innerWidth}x${window.innerHeight}`);
-        log(`️ Screen Size: ${screen.width}x${screen.height}`);
-        
-        // Kiểm tra WebView
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isAndroid = /Android/.test(navigator.userAgent);
-        const isStandalone = window.navigator.standalone;
-        
-        if (isIOS && !isStandalone) {
-            log("⚠️ Cảnh báo: Đang chạy trên iOS WebView (có thể là Facebook/TikTok app)", "warn");
-        }
-        if (isAndroid) {
-            log("⚠️ Cảnh báo: Đang chạy trên Android WebView", "warn");
-        }
-
-        // Kiểm tra CSS hỗ trợ
-        const checkCSS = (prop) => {
-            const el = document.createElement('div');
-            el.style[prop] = '100dvh';
-            log(`CSS ${prop}: ${el.style[prop] ? '✅ Hỗ trợ' : '❌ KHÔNG hỗ trợ'}`, el.style[prop] ? 'info' : 'error');
-        };
-        
-        checkCSS('height');
-        checkCSS('min-height');
-        
-        // Kiểm tra các API quan trọng
-        log(`Video Autoplay Policy: ${navigator.mediaCapabilities ? '✅' : '❌'}`);
-        log(`IntersectionObserver: ${window.IntersectionObserver ? '✅' : '❌'}`);
-        log(`Fetch API: ${window.fetch ? '✅' : '❌'}`);
-
-        // Kiểm tra lỗi cuộn
-        let scrollY = 0;
-        window.addEventListener('scroll', () => {
-            if (window.scrollY === scrollY && window.scrollY > 0) {
-                log("⚠️ Lỗi cuộn: Scroll position bị mắc kẹt!", "error");
-            }
-            scrollY = window.scrollY;
-        }, { passive: true });
-    });
-</script>
-<!-- KẾT THÚC ĐOẠN KIỂM TRA LỖI -->
     <!-- ==================== WELCOME VOUCHER POPUP ==================== -->
     <!-- WELCOME VOUCHER POPUP - CÓ ĐẾM NGƯỢC TỰ ĐỘNG 20 GIÂY -->
     <div class="welcome-overlay" id="welcomeOverlay">
